@@ -1,6 +1,12 @@
 # Changelog – UltraPlus-Free
 
-## v0.4.0 (Current)
+## v0.4.1 (In progress)
+
+### Planned / In progress
+- Toggle Enable/Disable user without deleting
+- Better subscription link display
+
+## v0.4.0
 
 ### Added
 - Single-file `worker.js` ready for direct upload to Cloudflare
@@ -22,9 +28,3 @@
 - Each person deploys their own panel
 - Default password is `admin` – must be changed via `ADMIN_PASSWORD`
 - Without KV, users are lost on redeploy
-
-## Planned Next
-- Toggle Enable/Disable user without deleting
-- Better subscription link display in panel
-- More Telegram commands
-- Further stability improvements
