@@ -3,11 +3,12 @@ main = "src/index.ts"
 compatibility_date = "2024-09-01"
 compatibility_flags = ["nodejs_compat"]
 
-# Phase 3: Uncomment and create a KV namespace for persistent users
+# Optional KV for persistent users
 # [[kv_namespaces]]
 # binding = "ULTRA_KV"
 # id = "your-kv-namespace-id"
-# preview_id = "your-preview-kv-id"
 
 # [vars]
 # ADMIN_PASSWORD = "your-strong-password"
+# TELEGRAM_BOT_TOKEN = "123456:ABC-DEF..."
+# TELEGRAM_ADMIN_ID = "your-telegram-user-id"
