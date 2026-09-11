@@ -1,84 +1,58 @@
 # 🚀 UltraPlus-Free v0.4
 
-**Strong self-hosted multi-language panel for Cloudflare Workers**  
+**Self-hosted multi-language panel for Cloudflare Workers**  
 Free • MIT • English / فارسی / 中文
 
----
-
-## ⚠️ Critical Notice
-
-**Every person deploys their own panel on their own Cloudflare account.**
-
-- There is no central server.
-- Admin password belongs **only** to the person who deployed it.
-- Default password: `admin` → **change it immediately**.
-- Never share `/admin` or your password.
-
-This is a **management panel + subscription generator**.  
-It is inspired by community tools at the feature level and written completely from scratch.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
 
-## Features (v0.4)
+## ⚠️ Important
+
+**Every person deploys their own panel on their own Cloudflare account.**  
+The admin password belongs only to that person.  
+Default password is `admin` → **change it immediately**.
+
+---
+
+## Quick Download
+
+- **Single file ready to upload:** [`worker.js`](worker.js)
+- **Full installation guide (English + Persian):** [`INSTALL.md`](INSTALL.md)
+
+---
+
+## Features
 
 - Multi-language UI (EN / FA / ZH) + RTL
-- Secure admin login (cookie)
-- User management with:
-  - Name / Remark
-  - Enable / Disable
-  - Expire date (days)
-  - Traffic limit (GB)
+- Admin login
+- User management (expire date + traffic limit)
 - Private subscription link per user (`/sub/<uuid>`)
-- VLESS link generation + Subscription-Userinfo headers
 - Optional KV (persistent users)
+- Optional Telegram bot (admin only)
 - Install Wizard (`/wizard`)
-- Telegram bot (admin only): `/status` `/users` `/help`
-- Clean single Worker
 
 ---
 
-## Quick Start
+## Fastest Install
 
-```bash
-git clone https://github.com/sezarm/UltraPlus-Free.git
-cd UltraPlus-Free
-npm install
-npx wrangler login
-npm run deploy
-```
+1. Download [`worker.js`](worker.js)
+2. Cloudflare Dashboard → Workers → Create Worker
+3. Paste the content of `worker.js` and Deploy
+4. Open `/admin` and login with `admin`
+5. Set `ADMIN_PASSWORD` in Worker Variables
 
-1. Open `https://<your-worker>.workers.dev/admin`
-2. Login with `admin`
-3. Set `ADMIN_PASSWORD` in Cloudflare → Worker → Settings → Variables
-4. (Recommended) Create KV and bind as `ULTRA_KV`
-
----
-
-## Telegram Bot (Optional)
-
-1. Create bot with @BotFather
-2. Add variables:
-   - `TELEGRAM_BOT_TOKEN`
-   - `TELEGRAM_ADMIN_ID` (your numeric Telegram ID)
-3. Set webhook:
-```
-https://api.telegram.org/bot<TOKEN>/setWebhook?url=https://YOUR-WORKER.workers.dev/telegram
-```
+Detailed steps → **[INSTALL.md](INSTALL.md)**
 
 ---
 
 ## فارسی
 
 **هر کسی پنل خودش را می‌سازد.**  
-رمز ادمین فقط مال همان شخص است.  
-رمز پیش‌فرض `admin` را فوراً عوض کنید.
+رمز پیش‌فرض `admin` را حتماً عوض کنید.
 
----
-
-## 中文
-
-**每个人部署自己的面板。**  
-默认密码 `admin`，请立即修改。
+- فایل آماده: [`worker.js`](worker.js)
+- راهنمای کامل نصب: [`INSTALL.md`](INSTALL.md)
 
 ---
 
