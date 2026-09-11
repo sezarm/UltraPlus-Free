@@ -1,6 +1,6 @@
 /**
- * UltraPlus-Free - Phase 3 (start)
- * Multi-language self-hosted panel
+ * UltraPlus-Free - Phase 3.1
+ * Multi-language self-hosted panel + simple Wizard page
  * Optional KV for persistent users
  * Each person deploys their own panel and sets their own password.
  */
@@ -35,6 +35,7 @@ const translations: Record<Lang, Record<string, string>> = {
     users: "Users",
     configs: "Configs",
     settings: "Settings",
+    wizard: "Wizard",
     logout: "Logout",
     addUser: "Add User",
     name: "Name",
@@ -45,7 +46,7 @@ const translations: Record<Lang, Record<string, string>> = {
     subLink: "Subscription Link",
     wrongPass: "Wrong password",
     noUsers: "No users yet",
-    phase: "Phase 3",
+    phase: "Phase 3.1",
     uuid: "UUID",
     actions: "Actions",
     adminPass: "Admin Password",
@@ -53,6 +54,12 @@ const translations: Record<Lang, Record<string, string>> = {
     defaultPass: "Default is admin. Set ADMIN_PASSWORD in Worker environment variables.",
     important: "Important",
     kvNote: "KV is optional. Without it users are kept in memory (reset on redeploy).",
+    wizardTitle: "Quick Install Wizard",
+    wizardStep1: "1. Deploy this Worker to your Cloudflare account",
+    wizardStep2: "2. Open /admin and login (default password: admin)",
+    wizardStep3: "3. Change ADMIN_PASSWORD in Worker settings",
+    wizardStep4: "4. Add users and share their private /sub/ links",
+    wizardNote: "This is a self-hosted panel. Every person creates their own instance.",
   },
   fa: {
     title: "UltraPlus-Free",
@@ -66,6 +73,7 @@ const translations: Record<Lang, Record<string, string>> = {
     users: "کاربران",
     configs: "کانفیگ‌ها",
     settings: "تنظیمات",
+    wizard: "ویزارد",
     logout: "خروج",
     addUser: "افزودن کاربر",
     name: "نام",
@@ -76,14 +84,20 @@ const translations: Record<Lang, Record<string, string>> = {
     subLink: "لینک سابسکریپشن",
     wrongPass: "رمز اشتباه است",
     noUsers: "هنوز کاربری وجود ندارد",
-    phase: "فاز ۳",
+    phase: "فاز ۳.۱",
     uuid: "UUID",
     actions: "عملیات",
     adminPass: "رمز ادمین",
     passWarning: "این رمز فقط برای پنل شماست. بعد از اولین ورود حتماً عوضش کنید.",
     defaultPass: "رمز پیش‌فرض admin است. با ADMIN_PASSWORD عوض کنید.",
     important: "مهم",
-    kvNote: "KV اختیاری است. بدون آن کاربران در حافظه نگه داشته می‌شوند (با ری‌دیپلوی پاک می‌شوند).",
+    kvNote: "KV اختیاری است. بدون آن کاربران در حافظه نگه داشته می‌شوند.",
+    wizardTitle: "ویزارد نصب سریع",
+    wizardStep1: "۱. این Worker را روی اکانت Cloudflare خود دیپلوی کنید",
+    wizardStep2: "۲. به /admin بروید و وارد شوید (رمز پیش‌فرض: admin)",
+    wizardStep3: "۳. رمز ADMIN_PASSWORD را در تنظیمات Worker عوض کنید",
+    wizardStep4: "۴. کاربر اضافه کنید و لینک /sub/ خصوصی‌شان را بدهید",
+    wizardNote: "این پنل کاملاً شخصی است. هر نفر نمونه خودش را می‌سازد.",
   },
   zh: {
     title: "UltraPlus-Free",
@@ -97,6 +111,7 @@ const translations: Record<Lang, Record<string, string>> = {
     users: "用户",
     configs: "配置",
     settings: "设置",
+    wizard: "向导",
     logout: "退出",
     addUser: "添加用户",
     name: "名称",
@@ -107,14 +122,20 @@ const translations: Record<Lang, Record<string, string>> = {
     subLink: "订阅链接",
     wrongPass: "密码错误",
     noUsers: "暂无用户",
-    phase: "第三阶段",
+    phase: "3.1 阶段",
     uuid: "UUID",
     actions: "操作",
     adminPass: "管理员密码",
     passWarning: "此密码仅属于你自己的面板。首次登录后请立即修改。",
     defaultPass: "默认密码是 admin。请设置 ADMIN_PASSWORD。",
     important: "重要",
-    kvNote: "KV 是可选的。没有 KV 时用户保存在内存中（重新部署会丢失）。",
+    kvNote: "KV 是可选的。没有 KV 时用户保存在内存中。",
+    wizardTitle: "快速安装向导",
+    wizardStep1: "1. 将此 Worker 部署到你的 Cloudflare 账户",
+    wizardStep2: "2. 打开 /admin 并登录（默认密码：admin）",
+    wizardStep3: "3. 在 Worker 设置中修改 ADMIN_PASSWORD",
+    wizardStep4: "4. 添加用户并分享他们的私人 /sub/ 链接",
+    wizardNote: "这是完全自托管的面板。每个人创建自己的实例。",
   },
 };
 
@@ -229,7 +250,7 @@ function baseLayout(lang: Lang, title: string, body: string): string {
     body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
     header { background: var(--card); padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 0.5rem; }
     header h1 { font-size: 1.2rem; }
-    nav a { color: var(--text); text-decoration: none; margin: 0 0.6rem; opacity: 0.85; font-size: 0.95rem; }
+    nav a { color: var(--text); text-decoration: none; margin: 0 0.5rem; opacity: 0.85; font-size: 0.9rem; }
     nav a:hover { opacity: 1; color: var(--primary); }
     main { padding: 1.5rem; max-width: 1100px; margin: 0 auto; }
     .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1.25rem 0; }
@@ -246,6 +267,8 @@ function baseLayout(lang: Lang, title: string, body: string): string {
     .form-row { margin-bottom: 0.8rem; }
     .note { margin-top: 1.5rem; padding: 1rem; background: var(--card); border-radius: 0.5rem; border-left: 4px solid var(--primary); font-size: 0.9rem; line-height: 1.5; }
     .warn-box { background: #422006; color: #fcd34d; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; font-size: 0.9rem; line-height: 1.5; }
+    .steps { margin: 1.5rem 0; }
+    .steps li { margin: 0.6rem 0; line-height: 1.5; }
   </style>
 </head>
 <body>
@@ -256,6 +279,7 @@ function baseLayout(lang: Lang, title: string, body: string): string {
       <a href="/admin/users?lang=${lang}">${t(lang, "users")}</a>
       <a href="/admin/configs?lang=${lang}">${t(lang, "configs")}</a>
       <a href="/admin/settings?lang=${lang}">${t(lang, "settings")}</a>
+      <a href="/wizard?lang=${lang}">${t(lang, "wizard")}</a>
       <a href="/logout?lang=${lang}">${t(lang, "logout")}</a>
     </nav>
   </header>
@@ -270,7 +294,7 @@ function renderDashboard(lang: Lang, userCount: number): string {
     <div class="grid">
       <div class="card"><h3>${t(lang, "status")}</h3><p><span class="badge">${t(lang, "online")}</span></p></div>
       <div class="card"><h3>${t(lang, "users")}</h3><p>${userCount}</p></div>
-      <div class="card"><h3>${t(lang, "phase")}</h3><p>3</p></div>
+      <div class="card"><h3>${t(lang, "phase")}</h3><p>3.1</p></div>
     </div>
     <div class="note">
       This is YOUR private panel.<br>
@@ -322,7 +346,7 @@ function renderConfigs(lang: Lang, host: string): string {
     <h2>${t(lang, "configs")}</h2>
     <div class="note">
       Each user has a private subscription link: <code>/sub/<uuid></code><br>
-      Full VLESS protocol handling will continue in next updates.
+      Share only the private link with each user.
     </div>
     <p style="margin-top:1rem">Base: <code>https://${host}/sub/<user-uuid></code></p>`;
   return baseLayout(lang, t(lang, "configs"), body);
@@ -338,9 +362,47 @@ function renderSettings(lang: Lang): string {
     </div>
     <div class="note">
       ${t(lang, "kvNote")}<br><br>
-      To enable KV: create a KV namespace in Cloudflare and bind it as <code>ULTRA_KV</code> in wrangler.toml
+      To enable KV: create a KV namespace and bind it as <code>ULTRA_KV</code> in wrangler.toml
     </div>`;
   return baseLayout(lang, t(lang, "settings"), body);
+}
+
+function renderWizard(lang: Lang): string {
+  const dir = lang === "fa" ? "rtl" : "ltr";
+  return `<!DOCTYPE html>
+<html lang="${lang}" dir="${dir}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${t(lang, "wizardTitle")} - UltraPlus-Free</title>
+  <style>
+    :root { --primary: #0ea5e9; --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem 1rem; }
+    .container { max-width: 640px; margin: 0 auto; }
+    h1 { font-size: 1.6rem; margin-bottom: 1rem; }
+    .card { background: var(--card); padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 1rem; }
+    ol { padding-left: 1.25rem; line-height: 1.8; }
+    .note { opacity: 0.85; font-size: 0.95rem; margin-top: 1rem; }
+    a { color: var(--primary); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>${t(lang, "wizardTitle")}</h1>
+    <div class="card">
+      <ol>
+        <li>${t(lang, "wizardStep1")}</li>
+        <li>${t(lang, "wizardStep2")}</li>
+        <li>${t(lang, "wizardStep3")}</li>
+        <li>${t(lang, "wizardStep4")}</li>
+      </ol>
+      <p class="note">${t(lang, "wizardNote")}</p>
+    </div>
+    <p><a href="/admin?lang=${lang}">${t(lang, "dashboard")}</a> · <a href="/?lang=${lang}">${t(lang, "login")}</a></p>
+  </div>
+</body>
+</html>`;
 }
 
 export default {
@@ -370,6 +432,10 @@ export default {
 
     if (path === "/" || path === "/login") {
       return new Response(renderLogin(lang), { headers: { "Content-Type": "text/html; charset=utf-8" } });
+    }
+
+    if (path === "/wizard") {
+      return new Response(renderWizard(lang), { headers: { "Content-Type": "text/html; charset=utf-8" } });
     }
 
     if (path.startsWith("/admin")) {
@@ -439,13 +505,13 @@ export default {
       return Response.json({
         status: "ok",
         project: "UltraPlus-Free",
-        phase: 3,
+        phase: "3.1",
         users: users.length,
         kv: !!env.ULTRA_KV,
       });
     }
 
-    return new Response("UltraPlus-Free is running. Go to /admin", {
+    return new Response("UltraPlus-Free is running. Go to /admin or /wizard", {
       status: 200,
       headers: { "Content-Type": "text/plain; charset=utf-8" },
     });
