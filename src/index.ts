@@ -1,12 +1,13 @@
 /**
- * UltraPlus-Free - Phase 2.1
- * Multi-language panel with admin auth, users management & subscription skeleton
+ * UltraPlus-Free - Phase 3 (start)
+ * Multi-language self-hosted panel
+ * Optional KV for persistent users
  * Each person deploys their own panel and sets their own password.
  */
 
 export interface Env {
   ADMIN_PASSWORD?: string;
-  // ULTRA_KV?: KVNamespace; // Phase 3
+  ULTRA_KV?: KVNamespace;
 }
 
 interface User {
@@ -44,13 +45,14 @@ const translations: Record<Lang, Record<string, string>> = {
     subLink: "Subscription Link",
     wrongPass: "Wrong password",
     noUsers: "No users yet",
-    phase: "Phase 2",
+    phase: "Phase 3",
     uuid: "UUID",
     actions: "Actions",
     adminPass: "Admin Password",
     passWarning: "This password is ONLY for YOUR panel. Change it after first login.",
-    defaultPass: "Default password is admin. Set ADMIN_PASSWORD in Worker environment variables.",
+    defaultPass: "Default is admin. Set ADMIN_PASSWORD in Worker environment variables.",
     important: "Important",
+    kvNote: "KV is optional. Without it users are kept in memory (reset on redeploy).",
   },
   fa: {
     title: "UltraPlus-Free",
@@ -74,13 +76,14 @@ const translations: Record<Lang, Record<string, string>> = {
     subLink: "لینک سابسکریپشن",
     wrongPass: "رمز اشتباه است",
     noUsers: "هنوز کاربری وجود ندارد",
-    phase: "فاز ۲",
+    phase: "فاز ۳",
     uuid: "UUID",
     actions: "عملیات",
     adminPass: "رمز ادمین",
     passWarning: "این رمز فقط برای پنل شماست. بعد از اولین ورود حتماً عوضش کنید.",
-    defaultPass: "رمز پیش‌فرض admin است. با متغیر ADMIN_PASSWORD در تنظیمات Worker عوض کنید.",
+    defaultPass: "رمز پیش‌فرض admin است. با ADMIN_PASSWORD عوض کنید.",
     important: "مهم",
+    kvNote: "KV اختیاری است. بدون آن کاربران در حافظه نگه داشته می‌شوند (با ری‌دیپلوی پاک می‌شوند).",
   },
   zh: {
     title: "UltraPlus-Free",
@@ -104,13 +107,14 @@ const translations: Record<Lang, Record<string, string>> = {
     subLink: "订阅链接",
     wrongPass: "密码错误",
     noUsers: "暂无用户",
-    phase: "第二阶段",
+    phase: "第三阶段",
     uuid: "UUID",
     actions: "操作",
     adminPass: "管理员密码",
     passWarning: "此密码仅属于你自己的面板。首次登录后请立即修改。",
-    defaultPass: "默认密码是 admin。请在 Worker 环境变量中设置 ADMIN_PASSWORD。",
+    defaultPass: "默认密码是 admin。请设置 ADMIN_PASSWORD。",
     important: "重要",
+    kvNote: "KV 是可选的。没有 KV 时用户保存在内存中（重新部署会丢失）。",
   },
 };
 
@@ -136,7 +140,23 @@ function uuidv4(): string {
   });
 }
 
-let usersStore: User[] = [];
+let memoryUsers: User[] = [];
+
+async function loadUsers(env: Env): Promise<User[]> {
+  if (env.ULTRA_KV) {
+    const data = await env.ULTRA_KV.get("users", "json");
+    return (data as User[]) || [];
+  }
+  return memoryUsers;
+}
+
+async function saveUsers(env: Env, users: User[]): Promise<void> {
+  if (env.ULTRA_KV) {
+    await env.ULTRA_KV.put("users", JSON.stringify(users));
+  } else {
+    memoryUsers = users;
+  }
+}
 
 function getCookie(request: Request, name: string): string | null {
   const cookie = request.headers.get("Cookie") || "";
@@ -159,7 +179,7 @@ function renderLogin(lang: Lang, error = false): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${t(lang, "title")}</title>
   <style>
-    :root { --primary: #0ea5e9; --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --danger: #ef4444; --warn: #f59e0b; }
+    :root { --primary: #0ea5e9; --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --danger: #ef4444; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
     .card { background: var(--card); padding: 2.5rem; border-radius: 1rem; width: 100%; max-width: 420px; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.5); }
@@ -244,27 +264,27 @@ function baseLayout(lang: Lang, title: string, body: string): string {
 </html>`;
 }
 
-function renderDashboard(lang: Lang): string {
+function renderDashboard(lang: Lang, userCount: number): string {
   const body = `
     <h2>${t(lang, "welcome")}</h2>
     <div class="grid">
       <div class="card"><h3>${t(lang, "status")}</h3><p><span class="badge">${t(lang, "online")}</span></p></div>
-      <div class="card"><h3>${t(lang, "users")}</h3><p>${usersStore.length}</p></div>
-      <div class="card"><h3>${t(lang, "phase")}</h3><p>2.1</p></div>
+      <div class="card"><h3>${t(lang, "users")}</h3><p>${userCount}</p></div>
+      <div class="card"><h3>${t(lang, "phase")}</h3><p>3</p></div>
     </div>
     <div class="note">
-      This is YOUR private panel. Only you control the users and links.<br>
-      Next steps: KV storage + full VLESS + Wizard.
+      This is YOUR private panel.<br>
+      ${t(lang, "kvNote")}
     </div>`;
   return baseLayout(lang, t(lang, "dashboard"), body);
 }
 
-function renderUsers(lang: Lang, host: string): string {
+function renderUsers(lang: Lang, host: string, users: User[]): string {
   let rows = "";
-  if (usersStore.length === 0) {
+  if (users.length === 0) {
     rows = `<tr><td colspan="5">${t(lang, "noUsers")}</td></tr>`;
   } else {
-    for (const u of usersStore) {
+    for (const u of users) {
       const sub = `https://${host}/sub/${u.uuid}`;
       rows += `<tr>
         <td>${u.name}</td>
@@ -302,9 +322,9 @@ function renderConfigs(lang: Lang, host: string): string {
     <h2>${t(lang, "configs")}</h2>
     <div class="note">
       Each user has a private subscription link: <code>/sub/<uuid></code><br>
-      Full VLESS protocol handling is planned for the next phase.
+      Full VLESS protocol handling will continue in next updates.
     </div>
-    <p style="margin-top:1rem">Base URL: <code>https://${host}/sub/<user-uuid></code></p>`;
+    <p style="margin-top:1rem">Base: <code>https://${host}/sub/<user-uuid></code></p>`;
   return baseLayout(lang, t(lang, "configs"), body);
 }
 
@@ -317,8 +337,8 @@ function renderSettings(lang: Lang): string {
       ${t(lang, "defaultPass")}
     </div>
     <div class="note">
-      How to change password:<br>
-      Cloudflare Dashboard → Workers & Pages → your worker → Settings → Variables and Secrets → Add <code>ADMIN_PASSWORD</code>
+      ${t(lang, "kvNote")}<br><br>
+      To enable KV: create a KV namespace in Cloudflare and bind it as <code>ULTRA_KV</code> in wrangler.toml
     </div>`;
   return baseLayout(lang, t(lang, "settings"), body);
 }
@@ -357,11 +377,13 @@ export default {
         return new Response(null, { status: 302, headers: { Location: `/?lang=${lang}` } });
       }
 
+      let users = await loadUsers(env);
+
       if (path === "/admin/users/add" && request.method === "POST") {
         const form = await request.formData();
         const name = form.get("name")?.toString()?.trim() || "User";
         const remark = form.get("remark")?.toString() || "";
-        usersStore.push({
+        users.push({
           id: uuidv4(),
           name,
           uuid: uuidv4(),
@@ -369,21 +391,23 @@ export default {
           enable: true,
           remark,
         });
+        await saveUsers(env, users);
         return new Response(null, { status: 302, headers: { Location: `/admin/users?lang=${lang}` } });
       }
 
       if (path === "/admin/users/delete" && request.method === "POST") {
         const form = await request.formData();
         const id = form.get("id")?.toString();
-        usersStore = usersStore.filter((u) => u.id !== id);
+        users = users.filter((u) => u.id !== id);
+        await saveUsers(env, users);
         return new Response(null, { status: 302, headers: { Location: `/admin/users?lang=${lang}` } });
       }
 
       if (path === "/admin" || path === "/admin/") {
-        return new Response(renderDashboard(lang), { headers: { "Content-Type": "text/html; charset=utf-8" } });
+        return new Response(renderDashboard(lang, users.length), { headers: { "Content-Type": "text/html; charset=utf-8" } });
       }
       if (path === "/admin/users") {
-        return new Response(renderUsers(lang, host), { headers: { "Content-Type": "text/html; charset=utf-8" } });
+        return new Response(renderUsers(lang, host, users), { headers: { "Content-Type": "text/html; charset=utf-8" } });
       }
       if (path === "/admin/configs") {
         return new Response(renderConfigs(lang, host), { headers: { "Content-Type": "text/html; charset=utf-8" } });
@@ -395,7 +419,8 @@ export default {
 
     if (path.startsWith("/sub/")) {
       const uuid = path.slice(5);
-      const user = usersStore.find((u) => u.uuid === uuid && u.enable);
+      const users = await loadUsers(env);
+      const user = users.find((u) => u.uuid === uuid && u.enable);
       if (!user) return new Response("Not found", { status: 404 });
 
       const vless = `vless://${user.uuid}@${host}:443?encryption=none&security=tls&type=ws&host=${host}&path=%2F#${encodeURIComponent(user.name)}`;
@@ -410,7 +435,14 @@ export default {
     }
 
     if (path === "/health") {
-      return Response.json({ status: "ok", project: "UltraPlus-Free", phase: "2.1", users: usersStore.length });
+      const users = await loadUsers(env);
+      return Response.json({
+        status: "ok",
+        project: "UltraPlus-Free",
+        phase: 3,
+        users: users.length,
+        kv: !!env.ULTRA_KV,
+      });
     }
 
     return new Response("UltraPlus-Free is running. Go to /admin", {
