@@ -1,7 +1,7 @@
 /**
- * UltraPlus-Free - Phase 3.2
- * Multi-language self-hosted panel
- * Wizard + Telegram bot skeleton + optional KV
+ * UltraPlus-Free v0.4
+ * Strong self-hosted multi-language panel
+ * Inspired by community panels (feature level only) – written from scratch
  * Each person deploys their own panel and sets their own password.
  */
 
@@ -19,6 +19,8 @@ interface User {
   created: number;
   enable: boolean;
   remark?: string;
+  expire?: number; // unix ms, 0 = never
+  totalGB?: number; // 0 = unlimited
 }
 
 const LANGUAGES = ["en", "fa", "zh"] as const;
@@ -27,7 +29,7 @@ type Lang = (typeof LANGUAGES)[number];
 const translations: Record<Lang, Record<string, string>> = {
   en: {
     title: "UltraPlus-Free",
-    subtitle: "Your own private panel on Cloudflare",
+    subtitle: "Your private powerful panel",
     login: "Login",
     password: "Password",
     dashboard: "Dashboard",
@@ -45,28 +47,32 @@ const translations: Record<Lang, Record<string, string>> = {
     enable: "Enable",
     disable: "Disable",
     delete: "Delete",
-    subLink: "Subscription Link",
+    subLink: "Sub Link",
     wrongPass: "Wrong password",
     noUsers: "No users yet",
-    phase: "Phase 3.2",
+    phase: "v0.4",
     uuid: "UUID",
     actions: "Actions",
     adminPass: "Admin Password",
     passWarning: "This password is ONLY for YOUR panel. Change it after first login.",
-    defaultPass: "Default is admin. Set ADMIN_PASSWORD in Worker environment variables.",
+    defaultPass: "Default is admin. Set ADMIN_PASSWORD in Worker variables.",
     important: "Important",
-    kvNote: "KV is optional. Without it users are kept in memory (reset on redeploy).",
+    kvNote: "KV optional. Without it users reset on redeploy.",
+    botNote: "Telegram bot optional. Set TELEGRAM_BOT_TOKEN + TELEGRAM_ADMIN_ID.",
     wizardTitle: "Quick Install Wizard",
     wizardStep1: "1. Deploy this Worker to your Cloudflare account",
-    wizardStep2: "2. Open /admin and login (default password: admin)",
-    wizardStep3: "3. Change ADMIN_PASSWORD in Worker settings",
+    wizardStep2: "2. Open /admin and login (default: admin)",
+    wizardStep3: "3. Set ADMIN_PASSWORD in Worker settings",
     wizardStep4: "4. Add users and share their private /sub/ links",
-    wizardNote: "This is a self-hosted panel. Every person creates their own instance.",
-    botNote: "Telegram bot is optional. Set TELEGRAM_BOT_TOKEN and TELEGRAM_ADMIN_ID to enable.",
+    wizardNote: "Self-hosted. Every person creates their own panel.",
+    expire: "Expire (days, 0=never)",
+    traffic: "Traffic GB (0=unlimited)",
+    never: "Never",
+    unlimited: "Unlimited",
   },
   fa: {
     title: "UltraPlus-Free",
-    subtitle: "پنل شخصی شما روی Cloudflare",
+    subtitle: "پنل قدرتمند و شخصی شما",
     login: "ورود",
     password: "رمز عبور",
     dashboard: "داشبورد",
@@ -84,28 +90,32 @@ const translations: Record<Lang, Record<string, string>> = {
     enable: "فعال",
     disable: "غیرفعال",
     delete: "حذف",
-    subLink: "لینک سابسکریپشن",
+    subLink: "لینک ساب",
     wrongPass: "رمز اشتباه است",
     noUsers: "هنوز کاربری وجود ندارد",
-    phase: "فاز ۳.۲",
+    phase: "نسخه ۰.۴",
     uuid: "UUID",
     actions: "عملیات",
     adminPass: "رمز ادمین",
-    passWarning: "این رمز فقط برای پنل شماست. بعد از اولین ورود حتماً عوضش کنید.",
-    defaultPass: "رمز پیش‌فرض admin است. با ADMIN_PASSWORD عوض کنید.",
+    passWarning: "این رمز فقط برای پنل شماست. بعد از ورود عوض کنید.",
+    defaultPass: "پیش‌فرض admin است. با ADMIN_PASSWORD عوض کنید.",
     important: "مهم",
-    kvNote: "KV اختیاری است. بدون آن کاربران در حافظه نگه داشته می‌شوند.",
+    kvNote: "KV اختیاری است. بدون آن با ری‌دیپلوی پاک می‌شود.",
+    botNote: "ربات تلگرام اختیاری است.",
     wizardTitle: "ویزارد نصب سریع",
-    wizardStep1: "۱. این Worker را روی اکانت Cloudflare خود دیپلوی کنید",
-    wizardStep2: "۲. به /admin بروید و وارد شوید (رمز پیش‌فرض: admin)",
-    wizardStep3: "۳. رمز ADMIN_PASSWORD را در تنظیمات Worker عوض کنید",
-    wizardStep4: "۴. کاربر اضافه کنید و لینک /sub/ خصوصی‌شان را بدهید",
-    wizardNote: "این پنل کاملاً شخصی است. هر نفر نمونه خودش را می‌سازد.",
-    botNote: "ربات تلگرام اختیاری است. TELEGRAM_BOT_TOKEN و TELEGRAM_ADMIN_ID را تنظیم کنید.",
+    wizardStep1: "۱. Worker را روی Cloudflare خود دیپلوی کنید",
+    wizardStep2: "۲. به /admin بروید (رمز پیش‌فرض: admin)",
+    wizardStep3: "۳. ADMIN_PASSWORD را تنظیم کنید",
+    wizardStep4: "۴. کاربر اضافه کنید و لینک /sub/ بدهید",
+    wizardNote: "کاملاً شخصی. هر نفر پنل خودش را می‌سازد.",
+    expire: "انقضا (روز، ۰=بدون انقضا)",
+    traffic: "حجم گیگ (۰=نامحدود)",
+    never: "بدون انقضا",
+    unlimited: "نامحدود",
   },
   zh: {
     title: "UltraPlus-Free",
-    subtitle: "你自己的 Cloudflare 私人面板",
+    subtitle: "你的强大私人面板",
     login: "登录",
     password: "密码",
     dashboard: "仪表盘",
@@ -126,21 +136,25 @@ const translations: Record<Lang, Record<string, string>> = {
     subLink: "订阅链接",
     wrongPass: "密码错误",
     noUsers: "暂无用户",
-    phase: "3.2 阶段",
+    phase: "v0.4",
     uuid: "UUID",
     actions: "操作",
     adminPass: "管理员密码",
-    passWarning: "此密码仅属于你自己的面板。首次登录后请立即修改。",
-    defaultPass: "默认密码是 admin。请设置 ADMIN_PASSWORD。",
+    passWarning: "此密码仅属于你的面板。请立即修改。",
+    defaultPass: "默认 admin。请设置 ADMIN_PASSWORD。",
     important: "重要",
-    kvNote: "KV 是可选的。没有 KV 时用户保存在内存中。",
+    kvNote: "KV 可选。没有时重新部署会丢失。",
+    botNote: "Telegram 机器人可选。",
     wizardTitle: "快速安装向导",
-    wizardStep1: "1. 将此 Worker 部署到你的 Cloudflare 账户",
-    wizardStep2: "2. 打开 /admin 并登录（默认密码：admin）",
-    wizardStep3: "3. 在 Worker 设置中修改 ADMIN_PASSWORD",
-    wizardStep4: "4. 添加用户并分享他们的私人 /sub/ 链接",
-    wizardNote: "这是完全自托管的面板。每个人创建自己的实例。",
-    botNote: "Telegram 机器人是可选的。设置 TELEGRAM_BOT_TOKEN 和 TELEGRAM_ADMIN_ID。",
+    wizardStep1: "1. 部署到你的 Cloudflare",
+    wizardStep2: "2. 打开 /admin（默认密码 admin）",
+    wizardStep3: "3. 设置 ADMIN_PASSWORD",
+    wizardStep4: "4. 添加用户并分享 /sub/ 链接",
+    wizardNote: "完全自托管。每人创建自己的面板。",
+    expire: "过期天数 (0=永久)",
+    traffic: "流量GB (0=无限)",
+    never: "永久",
+    unlimited: "无限",
   },
 };
 
@@ -196,13 +210,26 @@ function isAuthenticated(request: Request, env: Env): boolean {
   return token === btoa(expected);
 }
 
+function isUserValid(u: User): boolean {
+  if (!u.enable) return false;
+  if (u.expire && u.expire > 0 && Date.now() > u.expire) return false;
+  return true;
+}
+
 async function sendTelegram(env: Env, chatId: string, text: string) {
   if (!env.TELEGRAM_BOT_TOKEN) return;
-  await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML" }),
-  });
+  try {
+    await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML" }),
+    });
+  } catch {}
+}
+
+function buildVlessLink(user: User, host: string): string {
+  const name = encodeURIComponent(user.name || "UltraPlus");
+  return `vless://${user.uuid}@${host}:443?encryption=none&security=tls&sni=${host}&fp=chrome&type=ws&host=${host}&path=%2F#${name}`;
 }
 
 function renderLogin(lang: Lang, error = false): string {
@@ -214,19 +241,19 @@ function renderLogin(lang: Lang, error = false): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${t(lang, "title")}</title>
   <style>
-    :root { --primary: #0ea5e9; --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --danger: #ef4444; }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-    .card { background: var(--card); padding: 2.5rem; border-radius: 1rem; width: 100%; max-width: 420px; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.5); }
-    h1 { font-size: 1.5rem; margin-bottom: 0.5rem; text-align: center; }
-    p { text-align: center; opacity: 0.7; margin-bottom: 1rem; font-size: 0.9rem; }
-    input { width: 100%; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid #334155; background: #0f172a; color: var(--text); margin-bottom: 1rem; font-size: 1rem; }
-    button { width: 100%; padding: 0.75rem; border: none; border-radius: 0.5rem; background: var(--primary); color: white; font-weight: 600; cursor: pointer; font-size: 1rem; }
-    button:hover { filter: brightness(1.1); }
-    .error { color: var(--danger); text-align: center; margin-bottom: 1rem; font-size: 0.9rem; }
-    .warn { background: #422006; color: #fcd34d; padding: 0.75rem; border-radius: 0.5rem; font-size: 0.8rem; margin-bottom: 1rem; line-height: 1.4; }
-    .langs { display: flex; gap: 0.75rem; justify-content: center; margin-top: 1.5rem; }
-    .langs a { color: var(--primary); text-decoration: none; font-size: 0.85rem; }
+    :root{--p:#0ea5e9;--bg:#0f172a;--c:#1e293b;--t:#f1f5f9;--d:#ef4444}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--t);min-height:100vh;display:flex;align-items:center;justify-content:center}
+    .card{background:var(--c);padding:2.5rem;border-radius:1rem;width:100%;max-width:420px;box-shadow:0 25px 50px -12px #0008}
+    h1{font-size:1.5rem;text-align:center;margin-bottom:.5rem}
+    p{text-align:center;opacity:.7;margin-bottom:1rem;font-size:.9rem}
+    input{width:100%;padding:.75rem 1rem;border-radius:.5rem;border:1px solid #334155;background:#0f172a;color:var(--t);margin-bottom:1rem;font-size:1rem}
+    button{width:100%;padding:.75rem;border:none;border-radius:.5rem;background:var(--p);color:#fff;font-weight:600;cursor:pointer;font-size:1rem}
+    button:hover{filter:brightness(1.1)}
+    .error{color:var(--d);text-align:center;margin-bottom:1rem;font-size:.9rem}
+    .warn{background:#422006;color:#fcd34d;padding:.75rem;border-radius:.5rem;font-size:.8rem;margin-bottom:1rem;line-height:1.4}
+    .langs{display:flex;gap:.75rem;justify-content:center;margin-top:1.5rem}
+    .langs a{color:var(--p);text-decoration:none;font-size:.85rem}
   </style>
 </head>
 <body>
@@ -259,28 +286,28 @@ function baseLayout(lang: Lang, title: string, body: string): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${title} - UltraPlus-Free</title>
   <style>
-    :root { --primary: #0ea5e9; --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --border: #334155; --success: #10b981; --danger: #ef4444; }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-    header { background: var(--card); padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 0.5rem; }
-    header h1 { font-size: 1.2rem; }
-    nav a { color: var(--text); text-decoration: none; margin: 0 0.5rem; opacity: 0.85; font-size: 0.9rem; }
-    nav a:hover { opacity: 1; color: var(--primary); }
-    main { padding: 1.5rem; max-width: 1100px; margin: 0 auto; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1.25rem 0; }
-    .card { background: var(--card); padding: 1.25rem; border-radius: 0.75rem; border: 1px solid var(--border); }
-    .card h3 { font-size: 0.85rem; opacity: 0.7; margin-bottom: 0.4rem; }
-    .card p { font-size: 1.4rem; font-weight: 600; }
-    .badge { display: inline-block; background: var(--success); color: white; padding: 0.2rem 0.55rem; border-radius: 999px; font-size: 0.75rem; }
-    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-    th, td { padding: 0.75rem; text-align: start; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
-    th { opacity: 0.7; font-weight: 500; }
-    .btn { display: inline-block; padding: 0.4rem 0.8rem; border-radius: 0.4rem; border: none; cursor: pointer; font-size: 0.85rem; text-decoration: none; color: white; background: var(--primary); margin: 0 0.2rem; }
-    .btn-danger { background: var(--danger); }
-    input { padding: 0.5rem 0.75rem; border-radius: 0.4rem; border: 1px solid var(--border); background: #0f172a; color: var(--text); margin: 0.3rem 0; width: 100%; max-width: 320px; }
-    .form-row { margin-bottom: 0.8rem; }
-    .note { margin-top: 1.5rem; padding: 1rem; background: var(--card); border-radius: 0.5rem; border-left: 4px solid var(--primary); font-size: 0.9rem; line-height: 1.5; }
-    .warn-box { background: #422006; color: #fcd34d; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; font-size: 0.9rem; line-height: 1.5; }
+    :root{--p:#0ea5e9;--bg:#0f172a;--c:#1e293b;--t:#f1f5f9;--b:#334155;--s:#10b981;--d:#ef4444}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--t);min-height:100vh}
+    header{background:var(--c);padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--b);flex-wrap:wrap;gap:.5rem}
+    header h1{font-size:1.2rem}
+    nav a{color:var(--t);text-decoration:none;margin:0 .5rem;opacity:.85;font-size:.9rem}
+    nav a:hover{opacity:1;color:var(--p)}
+    main{padding:1.5rem;max-width:1100px;margin:0 auto}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin:1.25rem 0}
+    .card{background:var(--c);padding:1.25rem;border-radius:.75rem;border:1px solid var(--b)}
+    .card h3{font-size:.85rem;opacity:.7;margin-bottom:.4rem}
+    .card p{font-size:1.4rem;font-weight:600}
+    .badge{display:inline-block;background:var(--s);color:#fff;padding:.2rem .55rem;border-radius:999px;font-size:.75rem}
+    table{width:100%;border-collapse:collapse;margin-top:1rem;font-size:.9rem}
+    th,td{padding:.7rem;text-align:start;border-bottom:1px solid var(--b)}
+    th{opacity:.7;font-weight:500}
+    .btn{display:inline-block;padding:.35rem .7rem;border-radius:.4rem;border:none;cursor:pointer;font-size:.8rem;text-decoration:none;color:#fff;background:var(--p);margin:0 .15rem}
+    .btn-d{background:var(--d)}
+    input{padding:.5rem .75rem;border-radius:.4rem;border:1px solid var(--b);background:#0f172a;color:var(--t);margin:.25rem 0;width:100%;max-width:280px}
+    .form-row{margin-bottom:.7rem}
+    .note{margin-top:1.5rem;padding:1rem;background:var(--c);border-radius:.5rem;border-left:4px solid var(--p);font-size:.9rem;line-height:1.5}
+    .warn{background:#422006;color:#fcd34d;padding:1rem;border-radius:.5rem;margin-bottom:1rem;font-size:.9rem;line-height:1.5}
   </style>
 </head>
 <body>
@@ -300,18 +327,18 @@ function baseLayout(lang: Lang, title: string, body: string): string {
 </html>`;
 }
 
-function renderDashboard(lang: Lang, userCount: number): string {
+function renderDashboard(lang: Lang, users: User[]): string {
+  const active = users.filter(isUserValid).length;
   const body = `
     <h2>${t(lang, "welcome")}</h2>
     <div class="grid">
       <div class="card"><h3>${t(lang, "status")}</h3><p><span class="badge">${t(lang, "online")}</span></p></div>
-      <div class="card"><h3>${t(lang, "users")}</h3><p>${userCount}</p></div>
-      <div class="card"><h3>${t(lang, "phase")}</h3><p>3.2</p></div>
+      <div class="card"><h3>${t(lang, "users")}</h3><p>${users.length}</p></div>
+      <div class="card"><h3>Active</h3><p>${active}</p></div>
+      <div class="card"><h3>${t(lang, "phase")}</h3><p>0.4</p></div>
     </div>
     <div class="note">
-      This is YOUR private panel.<br>
-      ${t(lang, "kvNote")}<br>
-      ${t(lang, "botNote")}
+      ${t(lang, "kvNote")}<br>${t(lang, "botNote")}
     </div>`;
   return baseLayout(lang, t(lang, "dashboard"), body);
 }
@@ -319,20 +346,24 @@ function renderDashboard(lang: Lang, userCount: number): string {
 function renderUsers(lang: Lang, host: string, users: User[]): string {
   let rows = "";
   if (users.length === 0) {
-    rows = `<tr><td colspan="5">${t(lang, "noUsers")}</td></tr>`;
+    rows = `<tr><td colspan="6">${t(lang, "noUsers")}</td></tr>`;
   } else {
     for (const u of users) {
       const sub = `https://${host}/sub/${u.uuid}`;
+      const exp = u.expire && u.expire > 0 ? new Date(u.expire).toLocaleDateString() : t(lang, "never");
+      const tr = u.totalGB && u.totalGB > 0 ? u.totalGB + " GB" : t(lang, "unlimited");
       rows += `<tr>
         <td>${u.name}</td>
-        <td style="font-size:0.75rem">${u.uuid.slice(0, 8)}...</td>
-        <td>${u.enable ? t(lang, "enable") : t(lang, "disable")}</td>
-        <td><a class="btn" href="${sub}" target="_blank">${t(lang, "subLink")}</a></td>
+        <td style="font-size:.75rem">${u.uuid.slice(0,8)}...</td>
+        <td>${u.enable ? t(lang,"enable") : t(lang,"disable")}</td>
+        <td>${exp}</td>
+        <td>${tr}</td>
         <td>
+          <a class="btn" href="${sub}" target="_blank">${t(lang,"subLink")}</a>
           <form method="POST" action="/admin/users/delete" style="display:inline">
             <input type="hidden" name="id" value="${u.id}">
             <input type="hidden" name="lang" value="${lang}">
-            <button class="btn btn-danger" type="submit">${t(lang, "delete")}</button>
+            <button class="btn btn-d" type="submit">${t(lang,"delete")}</button>
           </form>
         </td>
       </tr>`;
@@ -341,14 +372,19 @@ function renderUsers(lang: Lang, host: string, users: User[]): string {
 
   const body = `
     <h2>${t(lang, "users")}</h2>
-    <form method="POST" action="/admin/users/add" style="margin:1rem 0;padding:1rem;background:var(--card);border-radius:0.75rem;">
-      <div class="form-row"><input name="name" placeholder="${t(lang, "name")}" required></div>
-      <div class="form-row"><input name="remark" placeholder="${t(lang, "remark")}"></div>
+    <form method="POST" action="/admin/users/add" style="margin:1rem 0;padding:1rem;background:var(--c);border-radius:.75rem">
+      <div class="form-row"><input name="name" placeholder="${t(lang,"name")}" required></div>
+      <div class="form-row"><input name="remark" placeholder="${t(lang,"remark")}"></div>
+      <div class="form-row"><input name="expireDays" type="number" min="0" value="0" placeholder="${t(lang,"expire")}"></div>
+      <div class="form-row"><input name="totalGB" type="number" min="0" value="0" placeholder="${t(lang,"traffic")}"></div>
       <input type="hidden" name="lang" value="${lang}">
-      <button class="btn" type="submit">${t(lang, "addUser")}</button>
+      <button class="btn" type="submit">${t(lang,"addUser")}</button>
     </form>
     <table>
-      <thead><tr><th>${t(lang, "name")}</th><th>${t(lang, "uuid")}</th><th>${t(lang, "status")}</th><th>${t(lang, "subLink")}</th><th>${t(lang, "actions")}</th></tr></thead>
+      <thead><tr>
+        <th>${t(lang,"name")}</th><th>${t(lang,"uuid")}</th><th>${t(lang,"status")}</th>
+        <th>Expire</th><th>Traffic</th><th>${t(lang,"actions")}</th>
+      </tr></thead>
       <tbody>${rows}</tbody>
     </table>`;
   return baseLayout(lang, t(lang, "users"), body);
@@ -358,25 +394,25 @@ function renderConfigs(lang: Lang, host: string): string {
   const body = `
     <h2>${t(lang, "configs")}</h2>
     <div class="note">
-      Each user has a private subscription link: <code>/sub/<uuid></code><br>
-      Share only the private link with each user. Do not share the admin panel.
+      Private link format: <code>/sub/<uuid></code><br>
+      Only share the private link with each user.
     </div>
-    <p style="margin-top:1rem">Base: <code>https://${host}/sub/<user-uuid></code></p>`;
+    <p style="margin-top:1rem">Base URL: <code>https://${host}/sub/<uuid></code></p>`;
   return baseLayout(lang, t(lang, "configs"), body);
 }
 
 function renderSettings(lang: Lang): string {
   const body = `
     <h2>${t(lang, "settings")}</h2>
-    <div class="warn-box">
-      <strong>${t(lang, "important")}</strong><br>
-      ${t(lang, "passWarning")}<br><br>
-      ${t(lang, "defaultPass")}
+    <div class="warn">
+      <strong>${t(lang,"important")}</strong><br>
+      ${t(lang,"passWarning")}<br><br>
+      ${t(lang,"defaultPass")}
     </div>
     <div class="note">
-      ${t(lang, "kvNote")}<br><br>
-      ${t(lang, "botNote")}<br>
-      Set webhook: <code>https://api.telegram.org/bot<TOKEN>/setWebhook?url=https://YOUR-WORKER/telegram</code>
+      ${t(lang,"kvNote")}<br><br>
+      ${t(lang,"botNote")}<br>
+      Webhook: <code>https://api.telegram.org/bot<TOKEN>/setWebhook?url=https://YOUR-WORKER/telegram</code>
     </div>`;
   return baseLayout(lang, t(lang, "settings"), body);
 }
@@ -388,72 +424,74 @@ function renderWizard(lang: Lang): string {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${t(lang, "wizardTitle")} - UltraPlus-Free</title>
+  <title>${t(lang,"wizardTitle")}</title>
   <style>
-    :root { --primary: #0ea5e9; --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem 1rem; }
-    .container { max-width: 640px; margin: 0 auto; }
-    h1 { font-size: 1.6rem; margin-bottom: 1rem; }
-    .card { background: var(--card); padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 1rem; }
-    ol { padding-left: 1.25rem; line-height: 1.8; }
-    .note { opacity: 0.85; font-size: 0.95rem; margin-top: 1rem; }
-    a { color: var(--primary); }
+    :root{--p:#0ea5e9;--bg:#0f172a;--c:#1e293b;--t:#f1f5f9}
+    body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--t);min-height:100vh;padding:2rem 1rem}
+    .box{max-width:640px;margin:0 auto}
+    h1{font-size:1.6rem;margin-bottom:1rem}
+    .card{background:var(--c);padding:1.5rem;border-radius:.75rem;margin-bottom:1rem}
+    ol{padding-left:1.25rem;line-height:1.8}
+    a{color:var(--p)}
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>${t(lang, "wizardTitle")}</h1>
+  <div class="box">
+    <h1>${t(lang,"wizardTitle")}</h1>
     <div class="card">
       <ol>
-        <li>${t(lang, "wizardStep1")}</li>
-        <li>${t(lang, "wizardStep2")}</li>
-        <li>${t(lang, "wizardStep3")}</li>
-        <li>${t(lang, "wizardStep4")}</li>
+        <li>${t(lang,"wizardStep1")}</li>
+        <li>${t(lang,"wizardStep2")}</li>
+        <li>${t(lang,"wizardStep3")}</li>
+        <li>${t(lang,"wizardStep4")}</li>
       </ol>
-      <p class="note">${t(lang, "wizardNote")}</p>
+      <p style="margin-top:1rem;opacity:.85">${t(lang,"wizardNote")}</p>
     </div>
-    <p><a href="/admin?lang=${lang}">${t(lang, "dashboard")}</a> · <a href="/?lang=${lang}">${t(lang, "login")}</a></p>
+    <p><a href="/admin?lang=${lang}">${t(lang,"dashboard")}</a> · <a href="/?lang=${lang}">${t(lang,"login")}</a></p>
   </div>
 </body>
 </html>`;
 }
 
 export default {
-  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+  async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
     const lang = getLang(request);
     const path = url.pathname;
     const host = url.host;
 
-    // Telegram webhook
+    // Telegram
     if (path === "/telegram" && request.method === "POST") {
       try {
-        const update = await request.json() as any;
-        const message = update?.message;
-        if (!message) return new Response("ok");
-
-        const chatId = String(message.chat.id);
-        const text = (message.text || "").trim();
+        const update: any = await request.json();
+        const msg = update?.message;
+        if (!msg) return new Response("ok");
+        const chatId = String(msg.chat.id);
+        const text = (msg.text || "").trim();
         const isAdmin = env.TELEGRAM_ADMIN_ID && chatId === String(env.TELEGRAM_ADMIN_ID);
 
         if (text === "/start") {
           await sendTelegram(env, chatId, isAdmin
-            ? "✅ Admin connected to UltraPlus-Free.\nCommands: /status /users"
-            : "Welcome. This bot is private for the panel owner.");
-        } else if (text === "/status" && isAdmin) {
+            ? "✅ UltraPlus-Free Admin\n/status /users /help"
+            : "This bot is private.");
+        } else if (!isAdmin) {
+          await sendTelegram(env, chatId, "Access denied.");
+        } else if (text === "/status") {
           const users = await loadUsers(env);
-          await sendTelegram(env, chatId, `Status: online\nUsers: ${users.length}\nKV: ${env.ULTRA_KV ? "yes" : "no"}`);
-        } else if (text === "/users" && isAdmin) {
+          const active = users.filter(isUserValid).length;
+          await sendTelegram(env, chatId, `Online\nUsers: ${users.length}\nActive: ${active}\nKV: ${env.ULTRA_KV ? "Yes" : "No"}`);
+        } else if (text === "/users") {
           const users = await loadUsers(env);
-          const list = users.length ? users.map(u => `• ${u.name} (${u.uuid.slice(0, 8)}...)`).join("\n") : "No users";
+          const list = users.length
+            ? users.map(u => `• ${u.name} | ${u.enable ? "ON" : "OFF"} | ${u.uuid.slice(0,8)}`).join("\n")
+            : "No users";
           await sendTelegram(env, chatId, list);
-        } else if (isAdmin) {
-          await sendTelegram(env, chatId, "Commands: /start /status /users");
+        } else if (text === "/help") {
+          await sendTelegram(env, chatId, "/start /status /users /help");
+        } else {
+          await sendTelegram(env, chatId, "Unknown. /help");
         }
-      } catch (e) {
-        // ignore
-      }
+      } catch {}
       return new Response("ok");
     }
 
@@ -462,25 +500,25 @@ export default {
       const pass = form.get("pass")?.toString() || "";
       const expected = env.ADMIN_PASSWORD || "admin";
       if (pass === expected) {
-        const headers = new Headers({ Location: `/admin?lang=${lang}` });
-        headers.append("Set-Cookie", `up_auth=${btoa(expected)}; Path=/; HttpOnly; SameSite=Lax`);
-        return new Response(null, { status: 302, headers });
+        const h = new Headers({ Location: `/admin?lang=${lang}` });
+        h.append("Set-Cookie", `up_auth=${btoa(expected)}; Path=/; HttpOnly; SameSite=Lax`);
+        return new Response(null, { status: 302, headers: h });
       }
-      return new Response(renderLogin(lang, true), { headers: { "Content-Type": "text/html; charset=utf-8" } });
+      return new Response(renderLogin(lang, true), { headers: { "Content-Type": "text/html;charset=utf-8" } });
     }
 
     if (path === "/logout") {
-      const headers = new Headers({ Location: `/?lang=${lang}` });
-      headers.append("Set-Cookie", "up_auth=; Path=/; Max-Age=0");
-      return new Response(null, { status: 302, headers });
+      const h = new Headers({ Location: `/?lang=${lang}` });
+      h.append("Set-Cookie", "up_auth=; Path=/; Max-Age=0");
+      return new Response(null, { status: 302, headers: h });
     }
 
     if (path === "/" || path === "/login") {
-      return new Response(renderLogin(lang), { headers: { "Content-Type": "text/html; charset=utf-8" } });
+      return new Response(renderLogin(lang), { headers: { "Content-Type": "text/html;charset=utf-8" } });
     }
 
     if (path === "/wizard") {
-      return new Response(renderWizard(lang), { headers: { "Content-Type": "text/html; charset=utf-8" } });
+      return new Response(renderWizard(lang), { headers: { "Content-Type": "text/html;charset=utf-8" } });
     }
 
     if (path.startsWith("/admin")) {
@@ -494,6 +532,10 @@ export default {
         const form = await request.formData();
         const name = form.get("name")?.toString()?.trim() || "User";
         const remark = form.get("remark")?.toString() || "";
+        const expireDays = parseInt(form.get("expireDays")?.toString() || "0", 10) || 0;
+        const totalGB = parseInt(form.get("totalGB")?.toString() || "0", 10) || 0;
+        const expire = expireDays > 0 ? Date.now() + expireDays * 86400000 : 0;
+
         users.push({
           id: uuidv4(),
           name,
@@ -501,6 +543,8 @@ export default {
           created: Date.now(),
           enable: true,
           remark,
+          expire,
+          totalGB,
         });
         await saveUsers(env, users);
         return new Response(null, { status: 302, headers: { Location: `/admin/users?lang=${lang}` } });
@@ -509,38 +553,39 @@ export default {
       if (path === "/admin/users/delete" && request.method === "POST") {
         const form = await request.formData();
         const id = form.get("id")?.toString();
-        users = users.filter((u) => u.id !== id);
+        users = users.filter(u => u.id !== id);
         await saveUsers(env, users);
         return new Response(null, { status: 302, headers: { Location: `/admin/users?lang=${lang}` } });
       }
 
       if (path === "/admin" || path === "/admin/") {
-        return new Response(renderDashboard(lang, users.length), { headers: { "Content-Type": "text/html; charset=utf-8" } });
+        return new Response(renderDashboard(lang, users), { headers: { "Content-Type": "text/html;charset=utf-8" } });
       }
       if (path === "/admin/users") {
-        return new Response(renderUsers(lang, host, users), { headers: { "Content-Type": "text/html; charset=utf-8" } });
+        return new Response(renderUsers(lang, host, users), { headers: { "Content-Type": "text/html;charset=utf-8" } });
       }
       if (path === "/admin/configs") {
-        return new Response(renderConfigs(lang, host), { headers: { "Content-Type": "text/html; charset=utf-8" } });
+        return new Response(renderConfigs(lang, host), { headers: { "Content-Type": "text/html;charset=utf-8" } });
       }
       if (path === "/admin/settings") {
-        return new Response(renderSettings(lang), { headers: { "Content-Type": "text/html; charset=utf-8" } });
+        return new Response(renderSettings(lang), { headers: { "Content-Type": "text/html;charset=utf-8" } });
       }
     }
 
+    // Subscription
     if (path.startsWith("/sub/")) {
       const uuid = path.slice(5);
       const users = await loadUsers(env);
-      const user = users.find((u) => u.uuid === uuid && u.enable);
-      if (!user) return new Response("Not found", { status: 404 });
+      const user = users.find(u => u.uuid === uuid && isUserValid(u));
+      if (!user) return new Response("Not found or expired", { status: 404 });
 
-      const vless = `vless://${user.uuid}@${host}:443?encryption=none&security=tls&type=ws&host=${host}&path=%2F#${encodeURIComponent(user.name)}`;
-      const body = btoa(vless + "\n");
+      const link = buildVlessLink(user, host);
+      const body = btoa(link + "\n");
       return new Response(body, {
         headers: {
-          "Content-Type": "text/plain; charset=utf-8",
+          "Content-Type": "text/plain;charset=utf-8",
           "Profile-Update-Interval": "6",
-          "Subscription-Userinfo": `upload=0; download=0; total=0; expire=0`,
+          "Subscription-Userinfo": `upload=0; download=0; total=${(user.totalGB || 0) * 1073741824}; expire=${user.expire ? Math.floor(user.expire / 1000) : 0}`,
         },
       });
     }
@@ -550,16 +595,16 @@ export default {
       return Response.json({
         status: "ok",
         project: "UltraPlus-Free",
-        phase: "3.2",
+        version: "0.4",
         users: users.length,
+        active: users.filter(isUserValid).length,
         kv: !!env.ULTRA_KV,
         telegram: !!env.TELEGRAM_BOT_TOKEN,
       });
     }
 
-    return new Response("UltraPlus-Free is running. Go to /admin or /wizard", {
-      status: 200,
-      headers: { "Content-Type": "text/plain; charset=utf-8" },
+    return new Response("UltraPlus-Free v0.4 – /admin or /wizard", {
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
     });
   },
 };
