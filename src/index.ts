@@ -1,12 +1,12 @@
 /**
- * UltraPlus-Free - Phase 2
+ * UltraPlus-Free - Phase 2.1
  * Multi-language panel with admin auth, users management & subscription skeleton
- * Built from scratch.
+ * Each person deploys their own panel and sets their own password.
  */
 
 export interface Env {
   ADMIN_PASSWORD?: string;
-  // ULTRA_KV?: KVNamespace;
+  // ULTRA_KV?: KVNamespace; // Phase 3
 }
 
 interface User {
@@ -24,11 +24,11 @@ type Lang = (typeof LANGUAGES)[number];
 const translations: Record<Lang, Record<string, string>> = {
   en: {
     title: "UltraPlus-Free",
-    subtitle: "Professional Cloudflare Worker Panel",
+    subtitle: "Your own private panel on Cloudflare",
     login: "Login",
     password: "Password",
     dashboard: "Dashboard",
-    welcome: "Welcome to UltraPlus-Free",
+    welcome: "Welcome to your panel",
     status: "Status",
     online: "Online",
     users: "Users",
@@ -41,27 +41,24 @@ const translations: Record<Lang, Record<string, string>> = {
     enable: "Enable",
     disable: "Disable",
     delete: "Delete",
-    copy: "Copy Link",
     subLink: "Subscription Link",
-    save: "Save",
     wrongPass: "Wrong password",
     noUsers: "No users yet",
-    phase: "Phase 2 active",
+    phase: "Phase 2",
     uuid: "UUID",
     actions: "Actions",
-    create: "Create",
-    back: "Back",
     adminPass: "Admin Password",
-    changePass: "Change later via Settings",
-    generated: "Link generated",
+    passWarning: "This password is ONLY for YOUR panel. Change it after first login.",
+    defaultPass: "Default password is admin. Set ADMIN_PASSWORD in Worker environment variables.",
+    important: "Important",
   },
   fa: {
     title: "UltraPlus-Free",
-    subtitle: "پنل حرفه‌ای Cloudflare Worker",
+    subtitle: "پنل شخصی شما روی Cloudflare",
     login: "ورود",
     password: "رمز عبور",
     dashboard: "داشبورد",
-    welcome: "به UltraPlus-Free خوش آمدید",
+    welcome: "به پنل خودتان خوش آمدید",
     status: "وضعیت",
     online: "آنلاین",
     users: "کاربران",
@@ -74,27 +71,24 @@ const translations: Record<Lang, Record<string, string>> = {
     enable: "فعال",
     disable: "غیرفعال",
     delete: "حذف",
-    copy: "کپی لینک",
     subLink: "لینک سابسکریپشن",
-    save: "ذخیره",
     wrongPass: "رمز اشتباه است",
     noUsers: "هنوز کاربری وجود ندارد",
-    phase: "فاز ۲ فعال",
+    phase: "فاز ۲",
     uuid: "UUID",
     actions: "عملیات",
-    create: "ایجاد",
-    back: "بازگشت",
     adminPass: "رمز ادمین",
-    changePass: "بعداً از تنظیمات تغییر دهید",
-    generated: "لینک ساخته شد",
+    passWarning: "این رمز فقط برای پنل شماست. بعد از اولین ورود حتماً عوضش کنید.",
+    defaultPass: "رمز پیش‌فرض admin است. با متغیر ADMIN_PASSWORD در تنظیمات Worker عوض کنید.",
+    important: "مهم",
   },
   zh: {
     title: "UltraPlus-Free",
-    subtitle: "专业 Cloudflare Worker 面板",
+    subtitle: "你自己的 Cloudflare 私人面板",
     login: "登录",
     password: "密码",
     dashboard: "仪表盘",
-    welcome: "欢迎使用 UltraPlus-Free",
+    welcome: "欢迎来到你的面板",
     status: "状态",
     online: "在线",
     users: "用户",
@@ -107,19 +101,16 @@ const translations: Record<Lang, Record<string, string>> = {
     enable: "启用",
     disable: "禁用",
     delete: "删除",
-    copy: "复制链接",
     subLink: "订阅链接",
-    save: "保存",
     wrongPass: "密码错误",
     noUsers: "暂无用户",
-    phase: "第二阶段已激活",
+    phase: "第二阶段",
     uuid: "UUID",
     actions: "操作",
-    create: "创建",
-    back: "返回",
     adminPass: "管理员密码",
-    changePass: "稍后可在设置中修改",
-    generated: "链接已生成",
+    passWarning: "此密码仅属于你自己的面板。首次登录后请立即修改。",
+    defaultPass: "默认密码是 admin。请在 Worker 环境变量中设置 ADMIN_PASSWORD。",
+    important: "重要",
   },
 };
 
@@ -145,7 +136,6 @@ function uuidv4(): string {
   });
 }
 
-// Simple in-memory store for Phase 2 (replace with KV later)
 let usersStore: User[] = [];
 
 function getCookie(request: Request, name: string): string | null {
@@ -169,16 +159,17 @@ function renderLogin(lang: Lang, error = false): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${t(lang, "title")}</title>
   <style>
-    :root { --primary: #0ea5e9; --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --danger: #ef4444; }
+    :root { --primary: #0ea5e9; --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --danger: #ef4444; --warn: #f59e0b; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-    .card { background: var(--card); padding: 2.5rem; border-radius: 1rem; width: 100%; max-width: 400px; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.5); }
+    .card { background: var(--card); padding: 2.5rem; border-radius: 1rem; width: 100%; max-width: 420px; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.5); }
     h1 { font-size: 1.5rem; margin-bottom: 0.5rem; text-align: center; }
-    p { text-align: center; opacity: 0.7; margin-bottom: 1.5rem; font-size: 0.9rem; }
+    p { text-align: center; opacity: 0.7; margin-bottom: 1rem; font-size: 0.9rem; }
     input { width: 100%; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid #334155; background: #0f172a; color: var(--text); margin-bottom: 1rem; font-size: 1rem; }
     button { width: 100%; padding: 0.75rem; border: none; border-radius: 0.5rem; background: var(--primary); color: white; font-weight: 600; cursor: pointer; font-size: 1rem; }
     button:hover { filter: brightness(1.1); }
     .error { color: var(--danger); text-align: center; margin-bottom: 1rem; font-size: 0.9rem; }
+    .warn { background: #422006; color: #fcd34d; padding: 0.75rem; border-radius: 0.5rem; font-size: 0.8rem; margin-bottom: 1rem; line-height: 1.4; }
     .langs { display: flex; gap: 0.75rem; justify-content: center; margin-top: 1.5rem; }
     .langs a { color: var(--primary); text-decoration: none; font-size: 0.85rem; }
   </style>
@@ -187,6 +178,7 @@ function renderLogin(lang: Lang, error = false): string {
   <div class="card">
     <h1>${t(lang, "title")}</h1>
     <p>${t(lang, "subtitle")}</p>
+    <div class="warn">${t(lang, "passWarning")}</div>
     ${error ? `<div class="error">${t(lang, "wrongPass")}</div>` : ""}
     <form method="POST" action="/login">
       <input type="hidden" name="lang" value="${lang}">
@@ -230,11 +222,10 @@ function baseLayout(lang: Lang, title: string, body: string): string {
     th { opacity: 0.7; font-weight: 500; }
     .btn { display: inline-block; padding: 0.4rem 0.8rem; border-radius: 0.4rem; border: none; cursor: pointer; font-size: 0.85rem; text-decoration: none; color: white; background: var(--primary); margin: 0 0.2rem; }
     .btn-danger { background: var(--danger); }
-    .btn-success { background: var(--success); }
-    input, select { padding: 0.5rem 0.75rem; border-radius: 0.4rem; border: 1px solid var(--border); background: #0f172a; color: var(--text); margin: 0.3rem 0; width: 100%; max-width: 320px; }
+    input { padding: 0.5rem 0.75rem; border-radius: 0.4rem; border: 1px solid var(--border); background: #0f172a; color: var(--text); margin: 0.3rem 0; width: 100%; max-width: 320px; }
     .form-row { margin-bottom: 0.8rem; }
     .note { margin-top: 1.5rem; padding: 1rem; background: var(--card); border-radius: 0.5rem; border-left: 4px solid var(--primary); font-size: 0.9rem; line-height: 1.5; }
-    .sub-link { word-break: break-all; background: #0f172a; padding: 0.75rem; border-radius: 0.4rem; font-size: 0.8rem; margin: 0.5rem 0; }
+    .warn-box { background: #422006; color: #fcd34d; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; font-size: 0.9rem; line-height: 1.5; }
   </style>
 </head>
 <body>
@@ -259,11 +250,11 @@ function renderDashboard(lang: Lang): string {
     <div class="grid">
       <div class="card"><h3>${t(lang, "status")}</h3><p><span class="badge">${t(lang, "online")}</span></p></div>
       <div class="card"><h3>${t(lang, "users")}</h3><p>${usersStore.length}</p></div>
-      <div class="card"><h3>${t(lang, "phase")}</h3><p>2</p></div>
+      <div class="card"><h3>${t(lang, "phase")}</h3><p>2.1</p></div>
     </div>
     <div class="note">
-      Phase 2: Admin authentication, Users management UI and Subscription link skeleton are ready.<br>
-      Next: persistent KV storage, full VLESS handler, Wizard page and Telegram bot.
+      This is YOUR private panel. Only you control the users and links.<br>
+      Next steps: KV storage + full VLESS + Wizard.
     </div>`;
   return baseLayout(lang, t(lang, "dashboard"), body);
 }
@@ -310,19 +301,24 @@ function renderConfigs(lang: Lang, host: string): string {
   const body = `
     <h2>${t(lang, "configs")}</h2>
     <div class="note">
-      Subscription format is ready. Each user has a private link: <code>/sub/&lt;uuid&gt;</code><br>
-      Full VLESS + Trojan protocol handling will be added in the next iteration.
+      Each user has a private subscription link: <code>/sub/<uuid></code><br>
+      Full VLESS protocol handling is planned for the next phase.
     </div>
-    <p style="margin-top:1rem">Example subscription base: <code>https://${host}/sub/&lt;user-uuid&gt;</code></p>`;
+    <p style="margin-top:1rem">Base URL: <code>https://${host}/sub/<user-uuid></code></p>`;
   return baseLayout(lang, t(lang, "configs"), body);
 }
 
 function renderSettings(lang: Lang): string {
   const body = `
     <h2>${t(lang, "settings")}</h2>
+    <div class="warn-box">
+      <strong>${t(lang, "important")}</strong><br>
+      ${t(lang, "passWarning")}<br><br>
+      ${t(lang, "defaultPass")}
+    </div>
     <div class="note">
-      ${t(lang, "adminPass")}: default is <code>admin</code> (or set <code>ADMIN_PASSWORD</code> in Worker environment variables).<br>
-      ${t(lang, "changePass")}
+      How to change password:<br>
+      Cloudflare Dashboard → Workers & Pages → your worker → Settings → Variables and Secrets → Add <code>ADMIN_PASSWORD</code>
     </div>`;
   return baseLayout(lang, t(lang, "settings"), body);
 }
@@ -334,7 +330,6 @@ export default {
     const path = url.pathname;
     const host = url.host;
 
-    // Login POST
     if (path === "/login" && request.method === "POST") {
       const form = await request.formData();
       const pass = form.get("pass")?.toString() || "";
@@ -347,25 +342,21 @@ export default {
       return new Response(renderLogin(lang, true), { headers: { "Content-Type": "text/html; charset=utf-8" } });
     }
 
-    // Logout
     if (path === "/logout") {
       const headers = new Headers({ Location: `/?lang=${lang}` });
       headers.append("Set-Cookie", "up_auth=; Path=/; Max-Age=0");
       return new Response(null, { status: 302, headers });
     }
 
-    // Public pages
     if (path === "/" || path === "/login") {
       return new Response(renderLogin(lang), { headers: { "Content-Type": "text/html; charset=utf-8" } });
     }
 
-    // Auth required
     if (path.startsWith("/admin")) {
       if (!isAuthenticated(request, env)) {
         return new Response(null, { status: 302, headers: { Location: `/?lang=${lang}` } });
       }
 
-      // Add user
       if (path === "/admin/users/add" && request.method === "POST") {
         const form = await request.formData();
         const name = form.get("name")?.toString()?.trim() || "User";
@@ -381,7 +372,6 @@ export default {
         return new Response(null, { status: 302, headers: { Location: `/admin/users?lang=${lang}` } });
       }
 
-      // Delete user
       if (path === "/admin/users/delete" && request.method === "POST") {
         const form = await request.formData();
         const id = form.get("id")?.toString();
@@ -403,13 +393,11 @@ export default {
       }
     }
 
-    // Subscription endpoint (skeleton)
     if (path.startsWith("/sub/")) {
       const uuid = path.slice(5);
       const user = usersStore.find((u) => u.uuid === uuid && u.enable);
       if (!user) return new Response("Not found", { status: 404 });
 
-      // Placeholder VLESS link (will be replaced with full protocol later)
       const vless = `vless://${user.uuid}@${host}:443?encryption=none&security=tls&type=ws&host=${host}&path=%2F#${encodeURIComponent(user.name)}`;
       const body = btoa(vless + "\n");
       return new Response(body, {
@@ -422,10 +410,10 @@ export default {
     }
 
     if (path === "/health") {
-      return Response.json({ status: "ok", project: "UltraPlus-Free", phase: 2, users: usersStore.length });
+      return Response.json({ status: "ok", project: "UltraPlus-Free", phase: "2.1", users: usersStore.length });
     }
 
-    return new Response("UltraPlus-Free Worker is running. Go to /admin", {
+    return new Response("UltraPlus-Free is running. Go to /admin", {
       status: 200,
       headers: { "Content-Type": "text/plain; charset=utf-8" },
     });
