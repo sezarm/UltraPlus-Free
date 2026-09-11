@@ -1,13 +1,15 @@
 /**
- * UltraPlus-Free - Phase 3.1
- * Multi-language self-hosted panel + simple Wizard page
- * Optional KV for persistent users
+ * UltraPlus-Free - Phase 3.2
+ * Multi-language self-hosted panel
+ * Wizard + Telegram bot skeleton + optional KV
  * Each person deploys their own panel and sets their own password.
  */
 
 export interface Env {
   ADMIN_PASSWORD?: string;
   ULTRA_KV?: KVNamespace;
+  TELEGRAM_BOT_TOKEN?: string;
+  TELEGRAM_ADMIN_ID?: string;
 }
 
 interface User {
@@ -46,7 +48,7 @@ const translations: Record<Lang, Record<string, string>> = {
     subLink: "Subscription Link",
     wrongPass: "Wrong password",
     noUsers: "No users yet",
-    phase: "Phase 3.1",
+    phase: "Phase 3.2",
     uuid: "UUID",
     actions: "Actions",
     adminPass: "Admin Password",
@@ -60,6 +62,7 @@ const translations: Record<Lang, Record<string, string>> = {
     wizardStep3: "3. Change ADMIN_PASSWORD in Worker settings",
     wizardStep4: "4. Add users and share their private /sub/ links",
     wizardNote: "This is a self-hosted panel. Every person creates their own instance.",
+    botNote: "Telegram bot is optional. Set TELEGRAM_BOT_TOKEN and TELEGRAM_ADMIN_ID to enable.",
   },
   fa: {
     title: "UltraPlus-Free",
@@ -84,7 +87,7 @@ const translations: Record<Lang, Record<string, string>> = {
     subLink: "لینک سابسکریپشن",
     wrongPass: "رمز اشتباه است",
     noUsers: "هنوز کاربری وجود ندارد",
-    phase: "فاز ۳.۱",
+    phase: "فاز ۳.۲",
     uuid: "UUID",
     actions: "عملیات",
     adminPass: "رمز ادمین",
@@ -98,6 +101,7 @@ const translations: Record<Lang, Record<string, string>> = {
     wizardStep3: "۳. رمز ADMIN_PASSWORD را در تنظیمات Worker عوض کنید",
     wizardStep4: "۴. کاربر اضافه کنید و لینک /sub/ خصوصی‌شان را بدهید",
     wizardNote: "این پنل کاملاً شخصی است. هر نفر نمونه خودش را می‌سازد.",
+    botNote: "ربات تلگرام اختیاری است. TELEGRAM_BOT_TOKEN و TELEGRAM_ADMIN_ID را تنظیم کنید.",
   },
   zh: {
     title: "UltraPlus-Free",
@@ -122,7 +126,7 @@ const translations: Record<Lang, Record<string, string>> = {
     subLink: "订阅链接",
     wrongPass: "密码错误",
     noUsers: "暂无用户",
-    phase: "3.1 阶段",
+    phase: "3.2 阶段",
     uuid: "UUID",
     actions: "操作",
     adminPass: "管理员密码",
@@ -136,6 +140,7 @@ const translations: Record<Lang, Record<string, string>> = {
     wizardStep3: "3. 在 Worker 设置中修改 ADMIN_PASSWORD",
     wizardStep4: "4. 添加用户并分享他们的私人 /sub/ 链接",
     wizardNote: "这是完全自托管的面板。每个人创建自己的实例。",
+    botNote: "Telegram 机器人是可选的。设置 TELEGRAM_BOT_TOKEN 和 TELEGRAM_ADMIN_ID。",
   },
 };
 
@@ -189,6 +194,15 @@ function isAuthenticated(request: Request, env: Env): boolean {
   const token = getCookie(request, "up_auth");
   const expected = env.ADMIN_PASSWORD || "admin";
   return token === btoa(expected);
+}
+
+async function sendTelegram(env: Env, chatId: string, text: string) {
+  if (!env.TELEGRAM_BOT_TOKEN) return;
+  await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML" }),
+  });
 }
 
 function renderLogin(lang: Lang, error = false): string {
@@ -267,8 +281,6 @@ function baseLayout(lang: Lang, title: string, body: string): string {
     .form-row { margin-bottom: 0.8rem; }
     .note { margin-top: 1.5rem; padding: 1rem; background: var(--card); border-radius: 0.5rem; border-left: 4px solid var(--primary); font-size: 0.9rem; line-height: 1.5; }
     .warn-box { background: #422006; color: #fcd34d; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; font-size: 0.9rem; line-height: 1.5; }
-    .steps { margin: 1.5rem 0; }
-    .steps li { margin: 0.6rem 0; line-height: 1.5; }
   </style>
 </head>
 <body>
@@ -294,11 +306,12 @@ function renderDashboard(lang: Lang, userCount: number): string {
     <div class="grid">
       <div class="card"><h3>${t(lang, "status")}</h3><p><span class="badge">${t(lang, "online")}</span></p></div>
       <div class="card"><h3>${t(lang, "users")}</h3><p>${userCount}</p></div>
-      <div class="card"><h3>${t(lang, "phase")}</h3><p>3.1</p></div>
+      <div class="card"><h3>${t(lang, "phase")}</h3><p>3.2</p></div>
     </div>
     <div class="note">
       This is YOUR private panel.<br>
-      ${t(lang, "kvNote")}
+      ${t(lang, "kvNote")}<br>
+      ${t(lang, "botNote")}
     </div>`;
   return baseLayout(lang, t(lang, "dashboard"), body);
 }
@@ -346,7 +359,7 @@ function renderConfigs(lang: Lang, host: string): string {
     <h2>${t(lang, "configs")}</h2>
     <div class="note">
       Each user has a private subscription link: <code>/sub/<uuid></code><br>
-      Share only the private link with each user.
+      Share only the private link with each user. Do not share the admin panel.
     </div>
     <p style="margin-top:1rem">Base: <code>https://${host}/sub/<user-uuid></code></p>`;
   return baseLayout(lang, t(lang, "configs"), body);
@@ -362,7 +375,8 @@ function renderSettings(lang: Lang): string {
     </div>
     <div class="note">
       ${t(lang, "kvNote")}<br><br>
-      To enable KV: create a KV namespace and bind it as <code>ULTRA_KV</code> in wrangler.toml
+      ${t(lang, "botNote")}<br>
+      Set webhook: <code>https://api.telegram.org/bot<TOKEN>/setWebhook?url=https://YOUR-WORKER/telegram</code>
     </div>`;
   return baseLayout(lang, t(lang, "settings"), body);
 }
@@ -411,6 +425,37 @@ export default {
     const lang = getLang(request);
     const path = url.pathname;
     const host = url.host;
+
+    // Telegram webhook
+    if (path === "/telegram" && request.method === "POST") {
+      try {
+        const update = await request.json() as any;
+        const message = update?.message;
+        if (!message) return new Response("ok");
+
+        const chatId = String(message.chat.id);
+        const text = (message.text || "").trim();
+        const isAdmin = env.TELEGRAM_ADMIN_ID && chatId === String(env.TELEGRAM_ADMIN_ID);
+
+        if (text === "/start") {
+          await sendTelegram(env, chatId, isAdmin
+            ? "✅ Admin connected to UltraPlus-Free.\nCommands: /status /users"
+            : "Welcome. This bot is private for the panel owner.");
+        } else if (text === "/status" && isAdmin) {
+          const users = await loadUsers(env);
+          await sendTelegram(env, chatId, `Status: online\nUsers: ${users.length}\nKV: ${env.ULTRA_KV ? "yes" : "no"}`);
+        } else if (text === "/users" && isAdmin) {
+          const users = await loadUsers(env);
+          const list = users.length ? users.map(u => `• ${u.name} (${u.uuid.slice(0, 8)}...)`).join("\n") : "No users";
+          await sendTelegram(env, chatId, list);
+        } else if (isAdmin) {
+          await sendTelegram(env, chatId, "Commands: /start /status /users");
+        }
+      } catch (e) {
+        // ignore
+      }
+      return new Response("ok");
+    }
 
     if (path === "/login" && request.method === "POST") {
       const form = await request.formData();
@@ -505,9 +550,10 @@ export default {
       return Response.json({
         status: "ok",
         project: "UltraPlus-Free",
-        phase: "3.1",
+        phase: "3.2",
         users: users.length,
         kv: !!env.ULTRA_KV,
+        telegram: !!env.TELEGRAM_BOT_TOKEN,
       });
     }
 
