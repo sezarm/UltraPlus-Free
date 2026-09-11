@@ -3,10 +3,11 @@ main = "src/index.ts"
 compatibility_date = "2024-09-01"
 compatibility_flags = ["nodejs_compat"]
 
-# Uncomment and configure when ready for KV / D1
+# Phase 3: Uncomment and create a KV namespace for persistent users
 # [[kv_namespaces]]
 # binding = "ULTRA_KV"
-# id = "your-kv-id"
+# id = "your-kv-namespace-id"
+# preview_id = "your-preview-kv-id"
 
 # [vars]
-# ADMIN_PATH = "/admin"
+# ADMIN_PASSWORD = "your-strong-password"
