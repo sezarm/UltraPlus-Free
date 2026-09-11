@@ -1,11 +1,21 @@
 /**
- * UltraPlus-Free - Phase 1 Skeleton
- * Clean multi-language admin panel foundation for Cloudflare Workers
- * Built from scratch. No copied code.
+ * UltraPlus-Free - Phase 2
+ * Multi-language panel with admin auth, users management & subscription skeleton
+ * Built from scratch.
  */
 
 export interface Env {
-  // ULTRA_KV?: KVNamespace; // enable later
+  ADMIN_PASSWORD?: string;
+  // ULTRA_KV?: KVNamespace;
+}
+
+interface User {
+  id: string;
+  name: string;
+  uuid: string;
+  created: number;
+  enable: boolean;
+  remark?: string;
 }
 
 const LANGUAGES = ["en", "fa", "zh"] as const;
@@ -13,7 +23,7 @@ type Lang = (typeof LANGUAGES)[number];
 
 const translations: Record<Lang, Record<string, string>> = {
   en: {
-    title: "UltraPlus-Free Panel",
+    title: "UltraPlus-Free",
     subtitle: "Professional Cloudflare Worker Panel",
     login: "Login",
     password: "Password",
@@ -25,11 +35,28 @@ const translations: Record<Lang, Record<string, string>> = {
     configs: "Configs",
     settings: "Settings",
     logout: "Logout",
-    coming: "Full features coming in next phases",
-    lang: "Language",
+    addUser: "Add User",
+    name: "Name",
+    remark: "Remark",
+    enable: "Enable",
+    disable: "Disable",
+    delete: "Delete",
+    copy: "Copy Link",
+    subLink: "Subscription Link",
+    save: "Save",
+    wrongPass: "Wrong password",
+    noUsers: "No users yet",
+    phase: "Phase 2 active",
+    uuid: "UUID",
+    actions: "Actions",
+    create: "Create",
+    back: "Back",
+    adminPass: "Admin Password",
+    changePass: "Change later via Settings",
+    generated: "Link generated",
   },
   fa: {
-    title: "پنل UltraPlus-Free",
+    title: "UltraPlus-Free",
     subtitle: "پنل حرفه‌ای Cloudflare Worker",
     login: "ورود",
     password: "رمز عبور",
@@ -41,11 +68,28 @@ const translations: Record<Lang, Record<string, string>> = {
     configs: "کانفیگ‌ها",
     settings: "تنظیمات",
     logout: "خروج",
-    coming: "ویژگی‌های کامل در فازهای بعدی اضافه می‌شود",
-    lang: "زبان",
+    addUser: "افزودن کاربر",
+    name: "نام",
+    remark: "توضیح",
+    enable: "فعال",
+    disable: "غیرفعال",
+    delete: "حذف",
+    copy: "کپی لینک",
+    subLink: "لینک سابسکریپشن",
+    save: "ذخیره",
+    wrongPass: "رمز اشتباه است",
+    noUsers: "هنوز کاربری وجود ندارد",
+    phase: "فاز ۲ فعال",
+    uuid: "UUID",
+    actions: "عملیات",
+    create: "ایجاد",
+    back: "بازگشت",
+    adminPass: "رمز ادمین",
+    changePass: "بعداً از تنظیمات تغییر دهید",
+    generated: "لینک ساخته شد",
   },
   zh: {
-    title: "UltraPlus-Free 面板",
+    title: "UltraPlus-Free",
     subtitle: "专业 Cloudflare Worker 面板",
     login: "登录",
     password: "密码",
@@ -57,26 +101,66 @@ const translations: Record<Lang, Record<string, string>> = {
     configs: "配置",
     settings: "设置",
     logout: "退出",
-    coming: "完整功能将在后续阶段推出",
-    lang: "语言",
+    addUser: "添加用户",
+    name: "名称",
+    remark: "备注",
+    enable: "启用",
+    disable: "禁用",
+    delete: "删除",
+    copy: "复制链接",
+    subLink: "订阅链接",
+    save: "保存",
+    wrongPass: "密码错误",
+    noUsers: "暂无用户",
+    phase: "第二阶段已激活",
+    uuid: "UUID",
+    actions: "操作",
+    create: "创建",
+    back: "返回",
+    adminPass: "管理员密码",
+    changePass: "稍后可在设置中修改",
+    generated: "链接已生成",
   },
 };
 
 function t(lang: Lang, key: string): string {
-  return translations[lang][key] || translations.en[key] || key;
+  return translations[lang]?.[key] || translations.en[key] || key;
 }
 
 function getLang(request: Request): Lang {
   const url = new URL(request.url);
   const q = url.searchParams.get("lang");
-  if (q && LANGUAGES.includes(q as Lang)) return q as Lang;
+  if (q && (LANGUAGES as readonly string[]).includes(q)) return q as Lang;
   const accept = request.headers.get("Accept-Language") || "";
   if (accept.includes("fa")) return "fa";
   if (accept.includes("zh")) return "zh";
   return "en";
 }
 
-function renderLogin(lang: Lang): string {
+function uuidv4(): string {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
+// Simple in-memory store for Phase 2 (replace with KV later)
+let usersStore: User[] = [];
+
+function getCookie(request: Request, name: string): string | null {
+  const cookie = request.headers.get("Cookie") || "";
+  const match = cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+function isAuthenticated(request: Request, env: Env): boolean {
+  const token = getCookie(request, "up_auth");
+  const expected = env.ADMIN_PASSWORD || "admin";
+  return token === btoa(expected);
+}
+
+function renderLogin(lang: Lang, error = false): string {
   const dir = lang === "fa" ? "rtl" : "ltr";
   return `<!DOCTYPE html>
 <html lang="${lang}" dir="${dir}">
@@ -85,16 +169,17 @@ function renderLogin(lang: Lang): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${t(lang, "title")}</title>
   <style>
-    :root { --primary: #0ea5e9; --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; }
+    :root { --primary: #0ea5e9; --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --danger: #ef4444; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
     .card { background: var(--card); padding: 2.5rem; border-radius: 1rem; width: 100%; max-width: 400px; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.5); }
     h1 { font-size: 1.5rem; margin-bottom: 0.5rem; text-align: center; }
-    p { text-align: center; opacity: 0.7; margin-bottom: 2rem; font-size: 0.9rem; }
+    p { text-align: center; opacity: 0.7; margin-bottom: 1.5rem; font-size: 0.9rem; }
     input { width: 100%; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid #334155; background: #0f172a; color: var(--text); margin-bottom: 1rem; font-size: 1rem; }
     button { width: 100%; padding: 0.75rem; border: none; border-radius: 0.5rem; background: var(--primary); color: white; font-weight: 600; cursor: pointer; font-size: 1rem; }
     button:hover { filter: brightness(1.1); }
-    .langs { display: flex; gap: 0.5rem; justify-content: center; margin-top: 1.5rem; }
+    .error { color: var(--danger); text-align: center; margin-bottom: 1rem; font-size: 0.9rem; }
+    .langs { display: flex; gap: 0.75rem; justify-content: center; margin-top: 1.5rem; }
     .langs a { color: var(--primary); text-decoration: none; font-size: 0.85rem; }
   </style>
 </head>
@@ -102,80 +187,144 @@ function renderLogin(lang: Lang): string {
   <div class="card">
     <h1>${t(lang, "title")}</h1>
     <p>${t(lang, "subtitle")}</p>
-    <form method="GET" action="/admin">
+    ${error ? `<div class="error">${t(lang, "wrongPass")}</div>` : ""}
+    <form method="POST" action="/login">
       <input type="hidden" name="lang" value="${lang}">
-      <input type="password" name="pass" placeholder="${t(lang, "password")}" required>
+      <input type="password" name="pass" placeholder="${t(lang, "password")}" required autofocus>
       <button type="submit">${t(lang, "login")}</button>
     </form>
     <div class="langs">
-      <a href="?lang=en">English</a>
-      <a href="?lang=fa">فارسی</a>
-      <a href="?lang=zh">中文</a>
+      <a href="/?lang=en">English</a>
+      <a href="/?lang=fa">فارسی</a>
+      <a href="/?lang=zh">中文</a>
     </div>
   </div>
 </body>
 </html>`;
 }
 
-function renderDashboard(lang: Lang): string {
+function baseLayout(lang: Lang, title: string, body: string): string {
   const dir = lang === "fa" ? "rtl" : "ltr";
   return `<!DOCTYPE html>
 <html lang="${lang}" dir="${dir}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${t(lang, "dashboard")} - UltraPlus-Free</title>
+  <title>${title} - UltraPlus-Free</title>
   <style>
-    :root { --primary: #0ea5e9; --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --border: #334155; }
+    :root { --primary: #0ea5e9; --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --border: #334155; --success: #10b981; --danger: #ef4444; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
     header { background: var(--card); padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 0.5rem; }
-    header h1 { font-size: 1.25rem; }
-    nav a { color: var(--text); text-decoration: none; margin-left: 1rem; opacity: 0.8; }
+    header h1 { font-size: 1.2rem; }
+    nav a { color: var(--text); text-decoration: none; margin: 0 0.6rem; opacity: 0.85; font-size: 0.95rem; }
     nav a:hover { opacity: 1; color: var(--primary); }
-    main { padding: 2rem 1.5rem; max-width: 1100px; margin: 0 auto; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; margin-top: 1.5rem; }
-    .card { background: var(--card); padding: 1.5rem; border-radius: 0.75rem; border: 1px solid var(--border); }
-    .card h3 { font-size: 0.9rem; opacity: 0.7; margin-bottom: 0.5rem; }
-    .card p { font-size: 1.5rem; font-weight: 600; }
-    .badge { display: inline-block; background: #10b981; color: white; padding: 0.25rem 0.6rem; border-radius: 999px; font-size: 0.75rem; }
-    .note { margin-top: 2rem; padding: 1rem; background: #1e293b; border-radius: 0.5rem; border-left: 4px solid var(--primary); opacity: 0.9; line-height: 1.6; }
+    main { padding: 1.5rem; max-width: 1100px; margin: 0 auto; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1.25rem 0; }
+    .card { background: var(--card); padding: 1.25rem; border-radius: 0.75rem; border: 1px solid var(--border); }
+    .card h3 { font-size: 0.85rem; opacity: 0.7; margin-bottom: 0.4rem; }
+    .card p { font-size: 1.4rem; font-weight: 600; }
+    .badge { display: inline-block; background: var(--success); color: white; padding: 0.2rem 0.55rem; border-radius: 999px; font-size: 0.75rem; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { padding: 0.75rem; text-align: start; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+    th { opacity: 0.7; font-weight: 500; }
+    .btn { display: inline-block; padding: 0.4rem 0.8rem; border-radius: 0.4rem; border: none; cursor: pointer; font-size: 0.85rem; text-decoration: none; color: white; background: var(--primary); margin: 0 0.2rem; }
+    .btn-danger { background: var(--danger); }
+    .btn-success { background: var(--success); }
+    input, select { padding: 0.5rem 0.75rem; border-radius: 0.4rem; border: 1px solid var(--border); background: #0f172a; color: var(--text); margin: 0.3rem 0; width: 100%; max-width: 320px; }
+    .form-row { margin-bottom: 0.8rem; }
+    .note { margin-top: 1.5rem; padding: 1rem; background: var(--card); border-radius: 0.5rem; border-left: 4px solid var(--primary); font-size: 0.9rem; line-height: 1.5; }
+    .sub-link { word-break: break-all; background: #0f172a; padding: 0.75rem; border-radius: 0.4rem; font-size: 0.8rem; margin: 0.5rem 0; }
   </style>
 </head>
 <body>
   <header>
     <h1>${t(lang, "title")}</h1>
     <nav>
-      <a href="?lang=${lang}">${t(lang, "dashboard")}</a>
-      <a href="?lang=${lang}">${t(lang, "users")}</a>
-      <a href="?lang=${lang}">${t(lang, "configs")}</a>
-      <a href="?lang=${lang}">${t(lang, "settings")}</a>
-      <a href="/?lang=${lang}">${t(lang, "logout")}</a>
+      <a href="/admin?lang=${lang}">${t(lang, "dashboard")}</a>
+      <a href="/admin/users?lang=${lang}">${t(lang, "users")}</a>
+      <a href="/admin/configs?lang=${lang}">${t(lang, "configs")}</a>
+      <a href="/admin/settings?lang=${lang}">${t(lang, "settings")}</a>
+      <a href="/logout?lang=${lang}">${t(lang, "logout")}</a>
     </nav>
   </header>
-  <main>
-    <h2>${t(lang, "welcome")}</h2>
-    <div class="grid">
-      <div class="card">
-        <h3>${t(lang, "status")}</h3>
-        <p><span class="badge">${t(lang, "online")}</span></p>
-      </div>
-      <div class="card">
-        <h3>${t(lang, "users")}</h3>
-        <p>0</p>
-      </div>
-      <div class="card">
-        <h3>${t(lang, "configs")}</h3>
-        <p>—</p>
-      </div>
-    </div>
-    <div class="note">
-      ${t(lang, "coming")}<br><br>
-      Phase 1 skeleton is live. Next: real user management, VLESS, Wizard & Telegram bot.
-    </div>
-  </main>
+  <main>${body}</main>
 </body>
 </html>`;
+}
+
+function renderDashboard(lang: Lang): string {
+  const body = `
+    <h2>${t(lang, "welcome")}</h2>
+    <div class="grid">
+      <div class="card"><h3>${t(lang, "status")}</h3><p><span class="badge">${t(lang, "online")}</span></p></div>
+      <div class="card"><h3>${t(lang, "users")}</h3><p>${usersStore.length}</p></div>
+      <div class="card"><h3>${t(lang, "phase")}</h3><p>2</p></div>
+    </div>
+    <div class="note">
+      Phase 2: Admin authentication, Users management UI and Subscription link skeleton are ready.<br>
+      Next: persistent KV storage, full VLESS handler, Wizard page and Telegram bot.
+    </div>`;
+  return baseLayout(lang, t(lang, "dashboard"), body);
+}
+
+function renderUsers(lang: Lang, host: string): string {
+  let rows = "";
+  if (usersStore.length === 0) {
+    rows = `<tr><td colspan="5">${t(lang, "noUsers")}</td></tr>`;
+  } else {
+    for (const u of usersStore) {
+      const sub = `https://${host}/sub/${u.uuid}`;
+      rows += `<tr>
+        <td>${u.name}</td>
+        <td style="font-size:0.75rem">${u.uuid.slice(0, 8)}...</td>
+        <td>${u.enable ? t(lang, "enable") : t(lang, "disable")}</td>
+        <td><a class="btn" href="${sub}" target="_blank">${t(lang, "subLink")}</a></td>
+        <td>
+          <form method="POST" action="/admin/users/delete" style="display:inline">
+            <input type="hidden" name="id" value="${u.id}">
+            <input type="hidden" name="lang" value="${lang}">
+            <button class="btn btn-danger" type="submit">${t(lang, "delete")}</button>
+          </form>
+        </td>
+      </tr>`;
+    }
+  }
+
+  const body = `
+    <h2>${t(lang, "users")}</h2>
+    <form method="POST" action="/admin/users/add" style="margin:1rem 0;padding:1rem;background:var(--card);border-radius:0.75rem;">
+      <div class="form-row"><input name="name" placeholder="${t(lang, "name")}" required></div>
+      <div class="form-row"><input name="remark" placeholder="${t(lang, "remark")}"></div>
+      <input type="hidden" name="lang" value="${lang}">
+      <button class="btn" type="submit">${t(lang, "addUser")}</button>
+    </form>
+    <table>
+      <thead><tr><th>${t(lang, "name")}</th><th>${t(lang, "uuid")}</th><th>${t(lang, "status")}</th><th>${t(lang, "subLink")}</th><th>${t(lang, "actions")}</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+  return baseLayout(lang, t(lang, "users"), body);
+}
+
+function renderConfigs(lang: Lang, host: string): string {
+  const body = `
+    <h2>${t(lang, "configs")}</h2>
+    <div class="note">
+      Subscription format is ready. Each user has a private link: <code>/sub/&lt;uuid&gt;</code><br>
+      Full VLESS + Trojan protocol handling will be added in the next iteration.
+    </div>
+    <p style="margin-top:1rem">Example subscription base: <code>https://${host}/sub/&lt;user-uuid&gt;</code></p>`;
+  return baseLayout(lang, t(lang, "configs"), body);
+}
+
+function renderSettings(lang: Lang): string {
+  const body = `
+    <h2>${t(lang, "settings")}</h2>
+    <div class="note">
+      ${t(lang, "adminPass")}: default is <code>admin</code> (or set <code>ADMIN_PASSWORD</code> in Worker environment variables).<br>
+      ${t(lang, "changePass")}
+    </div>`;
+  return baseLayout(lang, t(lang, "settings"), body);
 }
 
 export default {
@@ -183,22 +332,97 @@ export default {
     const url = new URL(request.url);
     const lang = getLang(request);
     const path = url.pathname;
+    const host = url.host;
 
-    if (path === "/" || path === "/login") {
-      return new Response(renderLogin(lang), {
-        headers: { "Content-Type": "text/html; charset=utf-8" },
-      });
+    // Login POST
+    if (path === "/login" && request.method === "POST") {
+      const form = await request.formData();
+      const pass = form.get("pass")?.toString() || "";
+      const expected = env.ADMIN_PASSWORD || "admin";
+      if (pass === expected) {
+        const headers = new Headers({ Location: `/admin?lang=${lang}` });
+        headers.append("Set-Cookie", `up_auth=${btoa(expected)}; Path=/; HttpOnly; SameSite=Lax`);
+        return new Response(null, { status: 302, headers });
+      }
+      return new Response(renderLogin(lang, true), { headers: { "Content-Type": "text/html; charset=utf-8" } });
     }
 
-    if (path === "/admin" || path.startsWith("/admin")) {
-      // TODO Phase 2: real password check + session
-      return new Response(renderDashboard(lang), {
-        headers: { "Content-Type": "text/html; charset=utf-8" },
+    // Logout
+    if (path === "/logout") {
+      const headers = new Headers({ Location: `/?lang=${lang}` });
+      headers.append("Set-Cookie", "up_auth=; Path=/; Max-Age=0");
+      return new Response(null, { status: 302, headers });
+    }
+
+    // Public pages
+    if (path === "/" || path === "/login") {
+      return new Response(renderLogin(lang), { headers: { "Content-Type": "text/html; charset=utf-8" } });
+    }
+
+    // Auth required
+    if (path.startsWith("/admin")) {
+      if (!isAuthenticated(request, env)) {
+        return new Response(null, { status: 302, headers: { Location: `/?lang=${lang}` } });
+      }
+
+      // Add user
+      if (path === "/admin/users/add" && request.method === "POST") {
+        const form = await request.formData();
+        const name = form.get("name")?.toString()?.trim() || "User";
+        const remark = form.get("remark")?.toString() || "";
+        usersStore.push({
+          id: uuidv4(),
+          name,
+          uuid: uuidv4(),
+          created: Date.now(),
+          enable: true,
+          remark,
+        });
+        return new Response(null, { status: 302, headers: { Location: `/admin/users?lang=${lang}` } });
+      }
+
+      // Delete user
+      if (path === "/admin/users/delete" && request.method === "POST") {
+        const form = await request.formData();
+        const id = form.get("id")?.toString();
+        usersStore = usersStore.filter((u) => u.id !== id);
+        return new Response(null, { status: 302, headers: { Location: `/admin/users?lang=${lang}` } });
+      }
+
+      if (path === "/admin" || path === "/admin/") {
+        return new Response(renderDashboard(lang), { headers: { "Content-Type": "text/html; charset=utf-8" } });
+      }
+      if (path === "/admin/users") {
+        return new Response(renderUsers(lang, host), { headers: { "Content-Type": "text/html; charset=utf-8" } });
+      }
+      if (path === "/admin/configs") {
+        return new Response(renderConfigs(lang, host), { headers: { "Content-Type": "text/html; charset=utf-8" } });
+      }
+      if (path === "/admin/settings") {
+        return new Response(renderSettings(lang), { headers: { "Content-Type": "text/html; charset=utf-8" } });
+      }
+    }
+
+    // Subscription endpoint (skeleton)
+    if (path.startsWith("/sub/")) {
+      const uuid = path.slice(5);
+      const user = usersStore.find((u) => u.uuid === uuid && u.enable);
+      if (!user) return new Response("Not found", { status: 404 });
+
+      // Placeholder VLESS link (will be replaced with full protocol later)
+      const vless = `vless://${user.uuid}@${host}:443?encryption=none&security=tls&type=ws&host=${host}&path=%2F#${encodeURIComponent(user.name)}`;
+      const body = btoa(vless + "\n");
+      return new Response(body, {
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8",
+          "Profile-Update-Interval": "6",
+          "Subscription-Userinfo": `upload=0; download=0; total=0; expire=0`,
+        },
       });
     }
 
     if (path === "/health") {
-      return Response.json({ status: "ok", project: "UltraPlus-Free", phase: 1 });
+      return Response.json({ status: "ok", project: "UltraPlus-Free", phase: 2, users: usersStore.length });
     }
 
     return new Response("UltraPlus-Free Worker is running. Go to /admin", {
