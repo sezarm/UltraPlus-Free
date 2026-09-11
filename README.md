@@ -1,40 +1,37 @@
 # 🚀 UltraPlus-Free
 
-**Professional, high-performance, multi-language Cloudflare Worker panel**  
-Single-file ready • Robust • Fast • Free • Open Source (MIT)
+**Professional multi-language Cloudflare Worker panel**  
+Self-hosted • Single Worker • Free • MIT
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-F38020?logo=cloudflare)](https://workers.cloudflare.com)
 
-**Languages / زبان‌ها / 语言**  
+**Languages**  
 [English](#english) | [فارسی](#فارسی) | [中文](#中文)
 
 ---
 
 ## English
 
-### What is UltraPlus-Free?
+### Important about Password
 
-UltraPlus-Free is a clean, modern, from-scratch Cloudflare Worker panel.  
-Key goals:
+**Every person deploys their own panel on their own Cloudflare account.**  
+The admin password is **only for that person’s panel**.  
 
-- True multi-language UI (English / Persian / Chinese)
-- Admin authentication
-- User management + private subscription links
-- Extensible architecture for VLESS / Trojan / Wizard / Telegram bot
-- MIT license – free for everyone
+- Default password: `admin`
+- Strongly recommended: change it immediately after first deploy by setting the environment variable `ADMIN_PASSWORD` in your Worker settings.
+- Never share your admin password or your Worker URL with admin access.
 
-### Current Status
+This is a self-hosted tool. There is no central server. Your data and your panel belong only to you.
 
-**Phase 2 completed**
+### Features (Current)
 
-- Multi-language panel (EN / FA / ZH + RTL)
-- Real admin login (password + cookie)
-- Users page: add / list / delete users
-- Each user gets a private subscription link (`/sub/<uuid>`)
-- Placeholder VLESS subscription output
-- Settings page
-- Clean TypeScript + Wrangler ready
+- True multi-language UI (English / Persian / Chinese) with RTL support
+- Admin login with cookie session
+- User management (add / list / delete)
+- Private subscription link per user (`/sub/<uuid>`)
+- VLESS subscription skeleton (ready for full protocol)
+- Clean TypeScript + Wrangler
 
 ### Quick Start
 
@@ -46,40 +43,38 @@ npx wrangler login
 npm run deploy
 ```
 
-Default admin password: `admin`  
-(You can set `ADMIN_PASSWORD` in Worker environment variables)
-
-Open: `https://<your-worker>.workers.dev/admin`
+After deploy:
+1. Go to `https://<your-worker>.workers.dev/admin`
+2. Login with password `admin`
+3. Immediately change the password via Cloudflare Dashboard → Workers → your worker → Settings → Variables → add `ADMIN_PASSWORD`
 
 ### Roadmap
 
-1. Phase 1 – Foundation + multi-lang panel ✅
-2. Phase 2 – Auth + Users + Subscription skeleton ✅
-3. Phase 3 – Persistent storage (KV) + full VLESS handler + Wizard
-4. Phase 4 – Telegram bot + advanced routing + performance
+- ✅ Phase 1: Foundation + multi-lang panel
+- ✅ Phase 2: Auth + Users + Subscription skeleton
+- 🔄 Phase 3: KV persistence + better VLESS + Wizard (in progress)
+- Phase 4: Telegram bot + advanced features
 
 ### License
 
-MIT
+MIT – Free for personal use.
 
 ---
 
 ## فارسی
 
-### وضعیت فعلی
+### نکته خیلی مهم درباره رمز
 
-**فاز ۲ کامل شد**
+**هر کسی پنل خودش را روی اکانت Cloudflare خودش می‌سازد.**  
+رمز ادمین فقط برای پنل همان شخص است.
 
-- پنل سه‌زبانه واقعی + RTL
-- ورود ادمین با رمز و کوکی
-- مدیریت کاربران (اضافه / لیست / حذف)
-- لینک سابسکریپشن خصوصی برای هر کاربر
-- خروجی placeholder برای VLESS
-- صفحه تنظیمات
+- رمز پیش‌فرض: `admin`
+- حتماً بعد از اولین دیپلوی رمز را عوض کنید (با متغیر محیطی `ADMIN_PASSWORD`)
+- رمز و آدرس پنل خود را با کسی به اشتراک نگذارید.
 
-رمز پیش‌فرض ادمین: `admin`
+این ابزار کاملاً شخصی و self-hosted است. هیچ سرور مرکزی وجود ندارد.
 
-### نصب
+### نصب سریع
 
 ```bash
 git clone https://github.com/sezarm/UltraPlus-Free.git
@@ -89,19 +84,23 @@ npx wrangler login
 npm run deploy
 ```
 
+بعد از دیپلوی به `/admin` بروید و با رمز `admin` وارد شوید، سپس فوراً رمز را تغییر دهید.
+
 ---
 
 ## 中文
 
-**第二阶段已完成**
+### 关于密码的重要说明
 
-- 多语言面板（英语 / 波斯语 / 中文）
-- 管理员登录
-- 用户管理 + 私人订阅链接
-- VLESS 订阅骨架
+**每个人都在自己的 Cloudflare 账户上部署自己的面板。**  
+管理员密码仅属于该用户自己的面板。
 
-默认管理员密码：`admin`
+- 默认密码：`admin`
+- 强烈建议首次部署后立即通过环境变量 `ADMIN_PASSWORD` 修改密码
+- 请勿分享你的管理员密码或面板地址
+
+这是完全自托管的工具，没有中央服务器。
 
 ---
 
-**Built for freedom and ease of use.**
+**Built for freedom. Each person owns their own panel.**
