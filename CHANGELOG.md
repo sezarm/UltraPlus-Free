@@ -1,32 +1,34 @@
 # Changelog – UltraPlus-Free
 
-## v0.4.1 (Released)
+## v0.4.2 (Phase 4 – in progress)
 
 ### Added
-- **Enable / Disable toggle** for users (without deleting)
-- Subscription link shown under each user name in the panel
-- Better status badges (green = active, red = disabled)
-- Improved actions column
+- `ROADMAP.md` – clear phase plan
+- Stronger project documentation structure
 
-### Fixed
-- Full worker.js restored and updated
+### Next in this phase
+- Telegram commands: `/add`, `/toggle`, `/del`
+- Keep `src/index.ts` synced with `worker.js`
+
+## v0.4.1
+
+### Added
+- Enable / Disable toggle for users
+- Subscription link shown under each user name
+- Better status badges
 
 ## v0.4.0
 
 ### Added
-- Single-file `worker.js` ready for direct upload to Cloudflare
-- Complete installation guide (`INSTALL.md`) in English + Persian
-- Multi-language panel (EN / FA / ZH) with RTL support
-- Admin login with cookie session
-- User management (Add / Delete / Expire / Traffic)
-- Private subscription link per user (`/sub/<uuid>`)
-- VLESS link generation + Subscription-Userinfo headers
-- Optional KV persistence
-- Optional Telegram bot (admin-only: /status /users /help)
-- Install Wizard page (`/wizard`)
-- Health endpoint (`/health`)
+- Single-file `worker.js`
+- `INSTALL.md` (English + Persian)
+- Multi-language panel (EN / FA / ZH) + RTL
+- Admin login, user management (expire + traffic)
+- Private `/sub/<uuid>` links
+- Optional KV + Telegram bot skeleton
+- Wizard page, health endpoint
+- `SECURITY.md`, `version.json`
 
-### Important Notes
+### Notes
 - Each person deploys their own panel
-- Default password is `admin` – must be changed via `ADMIN_PASSWORD`
-- Without KV, users are lost on redeploy
+- Default password `admin` must be changed via `ADMIN_PASSWORD`
