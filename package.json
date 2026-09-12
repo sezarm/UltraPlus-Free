@@ -1,7 +1,7 @@
 {
   "name": "ultraplus-free",
-  "version": "0.3.2",
-  "description": "Self-hosted multi-language Cloudflare Worker panel with user management, subscription links, Wizard and Telegram bot skeleton",
+  "version": "0.4.1",
+  "description": "Self-hosted multi-language Cloudflare Worker panel with user management, subscription links, Wizard and Telegram bot",
   "main": "src/index.ts",
   "scripts": {
     "dev": "wrangler dev",
@@ -15,7 +15,8 @@
     "panel",
     "subscription",
     "multi-language",
-    "self-hosted"
+    "self-hosted",
+    "vless"
   ],
   "author": "UltraPlus-Free",
   "license": "MIT",

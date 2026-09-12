@@ -1,0 +1,21 @@
+{
+  "name": "UltraPlus-Free",
+  "version": "0.4.1",
+  "phase": "management-panel",
+  "worker": "worker.js",
+  "license": "MIT",
+  "languages": ["en", "fa", "zh"],
+  "features": [
+    "multi-language-panel",
+    "admin-login",
+    "user-management",
+    "expire-traffic",
+    "enable-disable-toggle",
+    "private-subscription",
+    "vless-link",
+    "optional-kv",
+    "telegram-bot-skeleton",
+    "wizard-page"
+  ],
+  "notes": "Self-hosted management panel + subscription generator. Each person deploys their own instance."
+}
