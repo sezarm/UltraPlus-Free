@@ -1,10 +1,12 @@
 {
   "name": "UltraPlus-Free",
-  "version": "0.4.2",
-  "phase": "4-telegram-bot",
+  "version": "0.5.0",
+  "phase": "5-6-formats-settings",
   "worker": "worker.js",
   "license": "MIT",
   "languages": ["en", "fa", "zh"],
+  "sub_formats": ["base64", "raw", "clash"],
   "telegram_commands": ["/status", "/users", "/add", "/toggle", "/del", "/link", "/help"],
-  "notes": "Self-hosted management panel + subscription generator. Each person deploys their own instance."
+  "settings": ["path", "remark", "sni"],
+  "notes": "Self-hosted management panel + subscription generator."
 }

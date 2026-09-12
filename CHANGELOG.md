@@ -1,28 +1,28 @@
 # Changelog – UltraPlus-Free
 
-## v0.4.2 (Phase 4 – released)
+## v0.5.0 (Phases 5 + 6)
 
-### Added
-- **Telegram bot commands (admin only):**
-  - `/status` — panel status
-  - `/users` — list users
-  - `/add Name` — create user + get sub link
-  - `/toggle ID` — enable/disable (short id from /users)
-  - `/del ID` — delete user
-  - `/link ID` — get subscription link
-  - `/help` — command list
-- Bot commands listed on Settings page
+### Subscription formats
+- `?format=base64` — default (v2rayNG and similar)
+- `?format=raw` — plain VLESS URI
+- `?format=clash` — simple Clash Meta proxy block
+
+### Panel settings (KV)
+- WS Path
+- Remark prefix
+- SNI (optional)
+- Saved under Settings when `ULTRA_KV` is bound
+
+### Still included
+- Telegram: /add /toggle /del /link /status /users /help
+- Enable/Disable users, expire, traffic
+- Multi-language UI
+
+## v0.4.2
+- Telegram admin commands expanded
 
 ## v0.4.1
-
-### Added
-- Enable / Disable toggle for users (panel)
-- Subscription link shown under each user name
-- Better status badges
+- Enable/Disable toggle + sub link under user name
 
 ## v0.4.0
-
-### Added
-- Single-file `worker.js`, INSTALL.md, multi-language panel
-- User management (expire + traffic), private `/sub/<uuid>`
-- Optional KV, Wizard, health endpoint, SECURITY.md
+- Foundation: worker.js, INSTALL, panel, KV, Wizard
