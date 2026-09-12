@@ -1,7 +1,7 @@
 /**
- * UltraPlus-Free v0.4.2 - Single File Worker
- * Self-hosted multi-language panel
- * NEW: Telegram /add /toggle /del /link + panel toggle
+ * UltraPlus-Free v0.5.0 - Single File Worker
+ * Phase 5+6: sub formats (base64/raw/clash) + panel settings (path/remark/sni)
+ * Telegram bot + multi-lang panel + toggle users
  * Download and upload to Cloudflare Workers.
  */
 
@@ -14,7 +14,7 @@ const translations = {
     users: "Users", configs: "Configs", settings: "Settings", wizard: "Wizard", logout: "Logout",
     addUser: "Add User", name: "Name", remark: "Remark", enable: "Enable", disable: "Disable",
     delete: "Delete", subLink: "Sub Link", wrongPass: "Wrong password", noUsers: "No users yet",
-    phase: "v0.4.2", uuid: "UUID", actions: "Actions",
+    phase: "v0.5.0", uuid: "UUID", actions: "Actions",
     passWarning: "This password is ONLY for YOUR panel. Change it after first login.",
     defaultPass: "Default is admin. Set ADMIN_PASSWORD in Worker variables.",
     important: "Important", kvNote: "KV optional. Without it users reset on redeploy.",
@@ -34,7 +34,7 @@ const translations = {
     users: "کاربران", configs: "کانفیگ‌ها", settings: "تنظیمات", wizard: "ویزارد", logout: "خروج",
     addUser: "افزودن کاربر", name: "نام", remark: "توضیح", enable: "فعال", disable: "غیرفعال",
     delete: "حذف", subLink: "لینک ساب", wrongPass: "رمز اشتباه است", noUsers: "هنوز کاربری وجود ندارد",
-    phase: "نسخه ۰.۴.۲", uuid: "UUID", actions: "عملیات",
+    phase: "نسخه ۰.۵.۰", uuid: "UUID", actions: "عملیات",
     passWarning: "این رمز فقط برای پنل شماست. بعد از ورود عوض کنید.",
     defaultPass: "پیش‌فرض admin است. با ADMIN_PASSWORD عوض کنید.",
     important: "مهم", kvNote: "KV اختیاری است. بدون آن با ری‌دیپلوی پاک می‌شود.",
@@ -54,7 +54,7 @@ const translations = {
     users: "用户", configs: "配置", settings: "设置", wizard: "向导", logout: "退出",
     addUser: "添加用户", name: "名称", remark: "备注", enable: "启用", disable: "禁用",
     delete: "删除", subLink: "订阅链接", wrongPass: "密码错误", noUsers: "暂无用户",
-    phase: "v0.4.2", uuid: "UUID", actions: "操作",
+    phase: "v0.5.0", uuid: "UUID", actions: "操作",
     passWarning: "此密码仅属于你的面板。请立即修改。",
     defaultPass: "默认 admin。请设置 ADMIN_PASSWORD。",
     important: "重要", kvNote: "KV 可选。没有时重新部署会丢失。",
@@ -110,6 +110,21 @@ async function saveUsers(env, users) {
   }
 }
 
+async function loadSettings(env) {
+  const defaults = { path: "/", remark: "UltraPlus", sni: "" };
+  if (env.ULTRA_KV) {
+    const data = await env.ULTRA_KV.get("settings", "json");
+    return Object.assign({}, defaults, data || {});
+  }
+  return defaults;
+}
+
+async function saveSettings(env, settings) {
+  if (env.ULTRA_KV) {
+    await env.ULTRA_KV.put("settings", JSON.stringify(settings));
+  }
+}
+
 function getCookie(request, name) {
   const cookie = request.headers.get("Cookie") || "";
   const match = cookie.match(new RegExp("(?:^|; )" + name + "=([^;]*)"));
@@ -139,9 +154,20 @@ async function sendTelegram(env, chatId, text) {
   } catch (e) {}
 }
 
-function buildVlessLink(user, host) {
-  const name = encodeURIComponent(user.name || "UltraPlus");
-  return "vless://" + user.uuid + "@" + host + ":443?encryption=none&security=tls&sni=" + host + "&fp=chrome&type=ws&host=" + host + "&path=%2F#" + name;
+function buildVlessLink(user, host, settings) {
+  settings = settings || { path: "/", remark: "UltraPlus", sni: "" };
+  const path = encodeURIComponent(settings.path || "/");
+  const sni = settings.sni || host;
+  const remark = encodeURIComponent((settings.remark || "UltraPlus") + "-" + (user.name || "user"));
+  return "vless://" + user.uuid + "@" + host + ":443?encryption=none&security=tls&sni=" + sni + "&fp=chrome&type=ws&host=" + host + "&path=" + path + "#" + remark;
+}
+
+function buildClashConfig(user, host, settings) {
+  settings = settings || { path: "/", remark: "UltraPlus", sni: "" };
+  const path = settings.path || "/";
+  const sni = settings.sni || host;
+  const name = (settings.remark || "UltraPlus") + "-" + (user.name || "user");
+  return "proxies:\n  - name: " + name + "\n    type: vless\n    server: " + host + "\n    port: 443\n    uuid: " + user.uuid + "\n    network: ws\n    tls: true\n    servername: " + sni + "\n    udp: false\n    ws-opts:\n      path: \"" + path + "\"\n      headers:\n        Host: " + host + "\n";
 }
 
 function renderLogin(lang, error) {
@@ -156,7 +182,7 @@ function baseLayout(lang, title, body) {
 
 function renderDashboard(lang, users) {
   const active = users.filter(isUserValid).length;
-  const body = `<h2>${t(lang,"welcome")}</h2><div class="grid"><div class="card"><h3>${t(lang,"status")}</h3><p><span class="badge">${t(lang,"online")}</span></p></div><div class="card"><h3>${t(lang,"users")}</h3><p>${users.length}</p></div><div class="card"><h3>Active</h3><p>${active}</p></div><div class="card"><h3>${t(lang,"phase")}</h3><p>0.4.2</p></div></div><div class="note">${t(lang,"kvNote")}<br>${t(lang,"botNote")}</div>`;
+  const body = `<h2>${t(lang,"welcome")}</h2><div class="grid"><div class="card"><h3>${t(lang,"status")}</h3><p><span class="badge">${t(lang,"online")}</span></p></div><div class="card"><h3>${t(lang,"users")}</h3><p>${users.length}</p></div><div class="card"><h3>Active</h3><p>${active}</p></div><div class="card"><h3>${t(lang,"phase")}</h3><p>0.5.0</p></div></div><div class="note">${t(lang,"kvNote")}<br>${t(lang,"botNote")}</div>`;
   return baseLayout(lang, t(lang,"dashboard"), body);
 }
 
@@ -180,12 +206,35 @@ function renderUsers(lang, host, users) {
 }
 
 function renderConfigs(lang, host) {
-  const body = `<h2>${t(lang,"configs")}</h2><div class="note">Private link: <code>/sub/<uuid></code><br>Only share the private link with each user.</div><p style="margin-top:1rem">Base: <code>https://${host}/sub/<uuid></code></p>`;
+  const body = `<h2>${t(lang,"configs")}</h2>
+    <div class="note">
+      Private link: <code>/sub/<uuid></code><br>
+      Formats:
+      <ul style="margin:0.5rem 0 0 1.2rem;line-height:1.6">
+        <li><code>?format=base64</code> — default (v2rayNG)</li>
+        <li><code>?format=raw</code> — plain VLESS URI</li>
+        <li><code>?format=clash</code> — simple Clash Meta</li>
+      </ul>
+    </div>
+    <p style="margin-top:1rem">Example: <code>https://${host}/sub/<uuid>?format=raw</code></p>`;
   return baseLayout(lang, t(lang,"configs"), body);
 }
 
-function renderSettings(lang) {
-  const body = `<h2>${t(lang,"settings")}</h2><div class="warn"><strong>${t(lang,"important")}</strong><br>${t(lang,"passWarning")}<br><br>${t(lang,"defaultPass")}</div><div class="note">${t(lang,"kvNote")}<br><br>${t(lang,"botNote")}<br>Webhook: <code>https://api.telegram.org/bot<TOKEN>/setWebhook?url=https://YOUR-WORKER/telegram</code><br>Bot commands: /status /users /add Name /toggle ID /del ID /link ID /help</div>`;
+function renderSettings(lang, settings) {
+  settings = settings || { path: "/", remark: "UltraPlus", sni: "" };
+  const body = `<h2>${t(lang,"settings")}</h2>
+    <div class="warn"><strong>${t(lang,"important")}</strong><br>${t(lang,"passWarning")}<br><br>${t(lang,"defaultPass")}</div>
+    <form method="POST" action="/admin/settings/save" style="margin:1rem 0;padding:1rem;background:var(--c);border-radius:.75rem">
+      <div class="form-row"><label>WS Path</label><br><input name="path" value="${(settings.path || "/").replace(/"/g,"")}" placeholder="/"></div>
+      <div class="form-row"><label>Remark prefix</label><br><input name="remark" value="${(settings.remark || "UltraPlus").replace(/"/g,"")}" placeholder="UltraPlus"></div>
+      <div class="form-row"><label>SNI (empty = host)</label><br><input name="sni" value="${(settings.sni || "").replace(/"/g,"")}" placeholder="optional"></div>
+      <input type="hidden" name="lang" value="${lang}">
+      <button class="btn" type="submit">Save settings</button>
+      <p style="font-size:.8rem;opacity:.7;margin-top:.5rem">Needs KV (ULTRA_KV) to persist.</p>
+    </form>
+    <div class="note">${t(lang,"kvNote")}<br><br>${t(lang,"botNote")}<br>
+    Webhook: <code>https://api.telegram.org/bot<TOKEN>/setWebhook?url=https://YOUR-WORKER/telegram</code><br>
+    Bot: /status /users /add Name /toggle ID /del ID /link ID /help</div>`;
   return baseLayout(lang, t(lang,"settings"), body);
 }
 
@@ -217,7 +266,7 @@ export default {
         } else if (text === "/status") {
           const users = await loadUsers(env);
           const active = users.filter(isUserValid).length;
-          await sendTelegram(env, chatId, "Online\nUsers: " + users.length + "\nActive: " + active + "\nKV: " + (env.ULTRA_KV ? "Yes" : "No") + "\nVersion: 0.4.2");
+          await sendTelegram(env, chatId, "Online\nUsers: " + users.length + "\nActive: " + active + "\nKV: " + (env.ULTRA_KV ? "Yes" : "No") + "\nVersion: 0.5.0");
         } else if (text === "/users") {
           const users = await loadUsers(env);
           if (!users.length) await sendTelegram(env, chatId, "No users. Use /add Name");
@@ -328,32 +377,51 @@ export default {
       if (path === "/admin/configs") {
         return new Response(renderConfigs(lang, host), { headers: { "Content-Type": "text/html;charset=utf-8" } });
       }
+      if (path === "/admin/settings/save" && request.method === "POST") {
+        const form = await request.formData();
+        const settings = {
+          path: ((form.get("path") || "/") + "").trim() || "/",
+          remark: ((form.get("remark") || "UltraPlus") + "").trim() || "UltraPlus",
+          sni: ((form.get("sni") || "") + "").trim(),
+        };
+        await saveSettings(env, settings);
+        return new Response(null, { status: 302, headers: { Location: "/admin/settings?lang=" + lang } });
+      }
       if (path === "/admin/settings") {
-        return new Response(renderSettings(lang), { headers: { "Content-Type": "text/html;charset=utf-8" } });
+        const settings = await loadSettings(env);
+        return new Response(renderSettings(lang, settings), { headers: { "Content-Type": "text/html;charset=utf-8" } });
       }
     }
 
     if (path.startsWith("/sub/")) {
-      const uuid = path.slice(5);
+      const uuid = path.slice(5).split("?")[0];
+      const format = (url.searchParams.get("format") || "base64").toLowerCase();
       const users = await loadUsers(env);
+      const settings = await loadSettings(env);
       const user = users.find(function(u){ return u.uuid === uuid && isUserValid(u); });
       if (!user) return new Response("Not found or expired/disabled", { status: 404 });
-      const link = buildVlessLink(user, host);
-      const body = btoa(link + "\n");
-      return new Response(body, {
-        headers: {
-          "Content-Type": "text/plain;charset=utf-8",
-          "Profile-Update-Interval": "6",
-          "Subscription-Userinfo": "upload=0; download=0; total=" + ((user.totalGB || 0) * 1073741824) + "; expire=" + (user.expire ? Math.floor(user.expire / 1000) : 0),
-        },
-      });
+      const link = buildVlessLink(user, host, settings);
+      const headers = {
+        "Profile-Update-Interval": "6",
+        "Subscription-Userinfo": "upload=0; download=0; total=" + ((user.totalGB || 0) * 1073741824) + "; expire=" + (user.expire ? Math.floor(user.expire / 1000) : 0),
+      };
+      if (format === "raw" || format === "text") {
+        headers["Content-Type"] = "text/plain;charset=utf-8";
+        return new Response(link + "\n", { headers: headers });
+      }
+      if (format === "clash") {
+        headers["Content-Type"] = "text/yaml;charset=utf-8";
+        return new Response(buildClashConfig(user, host, settings), { headers: headers });
+      }
+      headers["Content-Type"] = "text/plain;charset=utf-8";
+      return new Response(btoa(link + "\n"), { headers: headers });
     }
 
     if (path === "/health") {
       const users = await loadUsers(env);
-      return Response.json({ status: "ok", project: "UltraPlus-Free", version: "0.4.2", users: users.length, active: users.filter(isUserValid).length, kv: !!env.ULTRA_KV, telegram: !!env.TELEGRAM_BOT_TOKEN });
+      return Response.json({ status: "ok", project: "UltraPlus-Free", version: "0.5.0", users: users.length, active: users.filter(isUserValid).length, kv: !!env.ULTRA_KV, telegram: !!env.TELEGRAM_BOT_TOKEN });
     }
 
-    return new Response("UltraPlus-Free v0.4.2 – /admin or /wizard", { headers: { "Content-Type": "text/plain;charset=utf-8" } });
+    return new Response("UltraPlus-Free v0.5.0 – /admin or /wizard", { headers: { "Content-Type": "text/plain;charset=utf-8" } });
   },
 };
