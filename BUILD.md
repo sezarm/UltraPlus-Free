@@ -1,26 +1,27 @@
-# Compile / Obfuscate UltraPlus-Free
+# Compile UltraPlus-Free (v2)
 
-## Idea
+## Files
 
-| File | Role |
-|------|------|
-| **worker.source.js** | Readable source – only **you** edit |
-| **build.py** | Compiler |
-| **worker.js** (compiled) | Deploy to Cloudflare |
+| File | Purpose |
+|------|--------|
+| `worker.source.js` | Edit this (readable) |
+| `build.py` | Stronger obfuscation v2 |
+| `worker.js` | Deploy to Cloudflare |
 
-## Workflow
+## Commands
 
-1. Edit `worker.source.js`
-2. Run `python3 build.py`
-3. Deploy generated `worker.js` to Cloudflare
+```bash
+python3 build.py
+```
 
-## Secrecy
+## Features of v2 compiler
 
-- Keep source **private** (local or private repo).
-- Public users only hit your Worker URL – they do not download source automatically.
-- Account owner can still open code in Cloudflare dashboard.
-- Obfuscation reduces casual copy/paste of clean source.
+- Strip comments + minify
+- Rename internal functions to `_0x...`
+- Rename internal state variables
+- Junk noise at top of file
+- Keeps `export default` and CF bindings intact
 
-## Wizard
+## Security note
 
-Host `wizard-installer.js` only on your account; share the workers.dev link privately.
+Keep `worker.source.js` private. Deploy only the compiled file.
