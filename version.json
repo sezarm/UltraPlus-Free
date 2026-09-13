@@ -1,12 +1,7 @@
 {
   "name": "UltraPlus-Free",
-  "version": "0.7.0",
-  "phase": "9.0-wizard-auto-deploy",
-  "worker": "worker.js",
-  "license": "MIT",
-  "wizard": {
-    "autoDeploy": true,
-    "method": "cloudflare-api-token",
-    "creates": ["worker", "kv", "admin_password_secret"]
-  }
+  "version": "0.6.8",
+  "note": "Use commit af92c994 worker.js if main is stub",
+  "wizard_docs": "WIZARD.md",
+  "good_worker": "https://raw.githubusercontent.com/sezarm/UltraPlus-Free/af92c99406a321d3078f9bedc52cff97265d97be/worker.js"
 }
