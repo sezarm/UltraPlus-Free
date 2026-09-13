@@ -1,15 +1,12 @@
-# UltraPlus-Free – Roadmap
+# Roadmap
 
-## Done
+| Block | Versions | Status |
+|-------|----------|--------|
+| Panel + users + bot | 0.4–0.5 | done |
+| VLESS core + harden | 0.6.x | done |
+| Host wizard file | wizard-installer.js | done |
+| Multi-host + fragment + bulk | **0.8.0** | done |
+| Later | more formats / UI polish | open |
 
-| Phase | Content | Version |
-|-------|---------|--------|
-| 1–7 | Panel + VLESS/WS core | 0.6.x |
-| 8 | Sing-box + stats reset | 0.6.8 |
-| **9** | **API Token auto-deploy wizard** | **0.7.0** |
-
-## Next
-
-- Harden deploy error messages
-- Optional custom domain bind via API
-- Keep single-file lean
+When you say «فاز بعد», we advance ~3 phase-steps in one go.
+Wizard public link is added by you at the end (your workers.dev).

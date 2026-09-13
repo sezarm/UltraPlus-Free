@@ -1,7 +1,8 @@
 {
   "name": "UltraPlus-Free",
-  "version": "0.6.8",
-  "note": "Use commit af92c994 worker.js if main is stub",
-  "wizard_docs": "WIZARD.md",
-  "good_worker": "https://raw.githubusercontent.com/sezarm/UltraPlus-Free/af92c99406a321d3078f9bedc52cff97265d97be/worker.js"
+  "version": "0.8.0",
+  "phase": "9-11",
+  "worker": "worker.js",
+  "wizard": "wizard-installer.js",
+  "features": ["vless-ws", "multi-host-sub", "fragment-option", "singbox", "clash", "bulk-toggle", "telegram"]
 }

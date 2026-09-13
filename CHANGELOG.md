@@ -1,15 +1,15 @@
 # Changelog – UltraPlus-Free
 
-## v0.7.0 (Phase 9.0)
+## v0.8.0 (Phases 9–11 combined)
 
-### Auto-Install Wizard
-- `/wizard` form: Account ID + API Token + Worker name + password
-- Creates **KV** (`ULTRA_KV`) and uploads latest `worker.js` from GitHub
-- Enables workers.dev subdomain when possible
-- **Token is never stored**
+- Restored full panel on `worker.js` path (after stub incident)
+- **Extra hosts / clean IPs** in Settings → multiple VLESS lines in `/sub`
+- **Fragment** option on subscription links (client hint)
+- **Enable all / Disable all** users
+- Host wizard remains separate: `wizard-installer.js` (private deploy by you)
 
 ## v0.6.8
-- Sing-box format + reset stats
+- Sing-box, import/export, stats, VLESS/WS core
 
-## v0.6.7 – 0.6.0
-- Import/export, core VLESS/WS, harden
+## Wizard
+- `wizard-installer.js` – you deploy once, share only your workers.dev link
