@@ -1,40 +1,24 @@
-# UltraPlus-Free – Auto Install Wizard
+# UltraPlus-Free Wizard
 
-## Idea
+## برای صاحب پروژه (host)
 
-You (or your users) open `/wizard` on a running UltraPlus Worker, paste **your own** Cloudflare Account ID + API Token, and the wizard:
+فایل: [`wizard-installer.js`](./wizard-installer.js)  
+راهنما: [`HOST-WIZARD.md`](./HOST-WIZARD.md)
 
-1. Creates a KV namespace
-2. Downloads latest `worker.js` from this GitHub repo
-3. Uploads it as a new Worker on **your** account
-4. Binds `ULTRA_KV` + `ADMIN_PASSWORD`
-5. Tries to enable `*.workers.dev`
+1. Deploy `wizard-installer.js` on your Cloudflare
+2. Publish the `*.workers.dev` URL in README
 
-No Cloudflare email password. Token is **not saved**.
+## برای کاربر
 
-## Token permissions
+1. Open the public wizard URL
+2. Create Cloudflare API Token (Edit Workers + KV)
+3. Paste Account ID + Token
+4. Install → panel appears on **your** account
 
-Create token: [Cloudflare API Tokens](https://dash.cloudflare.com/profile/api-tokens)
+## Panel source (worker.js)
 
-Suggested template: **Edit Cloudflare Workers**, or custom:
+Installer downloads a known-good panel build:
 
-- Account · Workers Scripts · Edit
-- Account · Workers KV Storage · Edit
-- Account · Account Settings · Read (for Account ID context)
-
-## First install (chicken & egg)
-
-1. Manually create one Worker in Cloudflare
-2. Paste `worker.js` from this repo → Deploy
-3. Open `https://YOUR-WORKER/wizard`
-4. Use the form to install more panels / updates
-
-## Security
-
-- Use a **scoped** token; revoke after install if you want
-- Prefer strong `ADMIN_PASSWORD`
-- Do not share tokens in screenshots
-
-## Not the same as BPB Wizard
-
-Built from scratch (MIT). Uses API Token form, not a copy of BPB GPL code.
+```text
+https://raw.githubusercontent.com/sezarm/UltraPlus-Free/af92c99406a321d3078f9bedc52cff97265d97be/worker.js
+```
