@@ -1,27 +1,25 @@
-# Compile UltraPlus-Free (v2)
+# Deploy UltraPlus-Free
 
-## Files
+## What you need
 
-| File | Purpose |
+**Only `worker.js`** → paste into Cloudflare Workers → Deploy.
+
+No Python. No Node. No build step required.
+
+## Optional variables (Cloudflare → Worker → Settings → Variables)
+
+| Name | Purpose |
 |------|--------|
-| `worker.source.js` | Edit this (readable) |
-| `build.py` | Stronger obfuscation v2 |
-| `worker.js` | Deploy to Cloudflare |
+| `ADMIN_PASSWORD` | Panel login (default `admin`) |
+| `ULTRA_KV` | KV binding for persistent users |
+| `SUB_TOKEN` | If set, `/sub` and `/client` need `?token=YOUR_TOKEN` |
+| `TELEGRAM_BOT_TOKEN` | Bot |
+| `TELEGRAM_ADMIN_ID` | Admin chat id |
 
-## Commands
+## Optional obfuscation
 
-```bash
-python3 build.py
-```
+`build.py` is **optional** and only for local use if you want a scrambled copy. Cloudflare does not run Python.
 
-## Features of v2 compiler
+## Wizard
 
-- Strip comments + minify
-- Rename internal functions to `_0x...`
-- Rename internal state variables
-- Junk noise at top of file
-- Keeps `export default` and CF bindings intact
-
-## Security note
-
-Keep `worker.source.js` private. Deploy only the compiled file.
+`wizard-installer.js` is separate – deploy on your account and share only your private link.

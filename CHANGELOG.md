@@ -1,13 +1,11 @@
 # Changelog
 
-## v0.15.0 (Phases 30–32)
+## v0.16.0 (Phases 33–35)
 
-- **Remove expired** users button
-- **Search** filter on Users page
-- **Sing-box** multi-outbound + selector/urltest when extra hosts set
+- **SUB_TOKEN** optional Worker variable – protects `/sub` and `/client` with `?token=`
+- Dashboard shows **worker host** + links to `/status` and `/health`
+- Deploy = **one file `worker.js`** paste into Cloudflare – **no Python required**
+- `build.py` remains optional only if you want local obfuscation
 
-## v0.14.0
-- Stronger build v2, random path, clear bans
-
-## v0.13.0
-- Compile pipeline
+## v0.15.0
+- Cleanup expired, user search, multi sing-box
