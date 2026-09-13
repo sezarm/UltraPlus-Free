@@ -1,20 +1,19 @@
 # Changelog – UltraPlus-Free
 
-## v0.6.3 (Phase 7.3)
+## v0.6.4 (Phase 7.4)
 
-### Core / Panel
-- Write queue capped at 64 chunks (protect Worker memory)
-- Cleaner remote connect failure (close WS with connect-fail)
-- Dashboard shows **Proxy** badge + current **WS Path**
+### Core
+- Validate target address + port (1–65535) before connect
+- Live proxy counters: OK / Fail / Auth deny (in-memory, per isolate)
+
+### Panel
+- Dashboard cards for proxy stats
+
+## v0.6.3
+- Queue cap 64, connect-fail handling, Proxy + Path on dashboard
 
 ## v0.6.2
-- Write queue, clean shutdown, early VLESS response, header guard
+- Write queue, clean shutdown, early VLESS response
 
-## v0.6.1
-- WS path must match Settings
-
-## v0.6.0
-- Lean VLESS-over-WebSocket core
-
-## v0.5.x / 0.4.x
-- Panel, formats, Telegram, INSTALL
+## v0.6.1 / 0.6.0
+- Path match + first VLESS/WS core
