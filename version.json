@@ -1,12 +1,13 @@
 {
   "name": "UltraPlus-Free",
-  "version": "0.5.0",
-  "phase": "5-6-formats-settings",
+  "version": "0.6.0",
+  "phase": "7-vless-ws-alpha",
   "worker": "worker.js",
   "license": "MIT",
-  "languages": ["en", "fa", "zh"],
-  "sub_formats": ["base64", "raw", "clash"],
-  "telegram_commands": ["/status", "/users", "/add", "/toggle", "/del", "/link", "/help"],
-  "settings": ["path", "remark", "sni"],
-  "notes": "Self-hosted management panel + subscription generator."
+  "proxy": {
+    "protocol": "vless",
+    "network": "ws",
+    "status": "alpha"
+  },
+  "notes": "Self-hosted panel + lean VLESS WebSocket core from scratch."
 }

@@ -1,28 +1,21 @@
 # Changelog – UltraPlus-Free
 
-## v0.5.0 (Phases 5 + 6)
+## v0.6.0 (Phase 7 alpha)
 
-### Subscription formats
-- `?format=base64` — default (v2rayNG and similar)
-- `?format=raw` — plain VLESS URI
-- `?format=clash` — simple Clash Meta proxy block
+### Added
+- **Lightweight VLESS-over-WebSocket core** (written from scratch)
+- Uses Cloudflare `sockets` API for TCP outbound
+- UUID checked against panel users (enable + expire)
+- TCP command only (lean build)
 
-### Panel settings (KV)
-- WS Path
-- Remark prefix
-- SNI (optional)
-- Saved under Settings when `ULTRA_KV` is bound
+### Notes
+- This is an **alpha** core – test carefully on your own Worker
+- Not a full BPB/Nova feature set (no fragment stack, no WARP, no multi-protocol suite)
+- Panel + sub formats from 0.5.x still included
 
-### Still included
-- Telegram: /add /toggle /del /link /status /users /help
-- Enable/Disable users, expire, traffic
-- Multi-language UI
+## v0.5.0
+- Sub formats: base64 / raw / clash
+- Panel settings: path / remark / sni (KV)
 
-## v0.4.2
-- Telegram admin commands expanded
-
-## v0.4.1
-- Enable/Disable toggle + sub link under user name
-
-## v0.4.0
-- Foundation: worker.js, INSTALL, panel, KV, Wizard
+## v0.4.x
+- Panel, users, Telegram, toggle, INSTALL
