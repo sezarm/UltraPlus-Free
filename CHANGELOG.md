@@ -1,19 +1,20 @@
 # Changelog – UltraPlus-Free
 
-## v0.6.4 (Phase 7.4)
+## v0.6.5 (Phase 7.5)
 
 ### Core
-- Validate target address + port (1–65535) before connect
-- Live proxy counters: OK / Fail / Auth deny (in-memory, per isolate)
+- Soft limit: max **48** concurrent WebSocket sessions per isolate
+- Over limit → close with `busy`
 
-### Panel
-- Dashboard cards for proxy stats
+### Panel / Bot
+- Dashboard: **Active WS** counter
+- Telegram: `/stats` (same as enhanced `/status`) shows proxy OK/Fail/Auth/Active
+
+## v0.6.4
+- Port validation + proxy stats on dashboard
 
 ## v0.6.3
-- Queue cap 64, connect-fail handling, Proxy + Path on dashboard
+- Queue cap, connect-fail, Proxy + Path cards
 
-## v0.6.2
-- Write queue, clean shutdown, early VLESS response
-
-## v0.6.1 / 0.6.0
-- Path match + first VLESS/WS core
+## v0.6.2 / 0.6.1 / 0.6.0
+- Hardened VLESS/WS core, path match, first core
