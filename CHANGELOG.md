@@ -1,15 +1,17 @@
 # Changelog – UltraPlus-Free
 
-## v0.8.0 (Phases 9–11 combined)
+## v0.9.0 (Phases 12–14)
 
-- Restored full panel on `worker.js` path (after stub incident)
-- **Extra hosts / clean IPs** in Settings → multiple VLESS lines in `/sub`
-- **Fragment** option on subscription links (client hint)
-- **Enable all / Disable all** users
-- Host wizard remains separate: `wizard-installer.js` (private deploy by you)
+- **Max connections per user** (Settings, default 2)
+- **Announcement** on admin dashboard
+- **Last seen** + live WS count per user on Users page
+- Keeps: multi-host sub, fragment, bulk enable/disable, Sing-box, VLESS/WS core
 
-## v0.6.8
-- Sing-box, import/export, stats, VLESS/WS core
+## v0.8.0 (Phases 9–11)
+
+- Extra hosts / clean IPs in subscription
+- Fragment option, enable/disable all
 
 ## Wizard
-- `wizard-installer.js` – you deploy once, share only your workers.dev link
+
+- `wizard-installer.js` – deploy privately; share only your link

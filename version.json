@@ -1,8 +1,7 @@
 {
   "name": "UltraPlus-Free",
-  "version": "0.8.0",
-  "phase": "9-11",
+  "version": "0.9.0",
+  "phase": "12-14",
   "worker": "worker.js",
-  "wizard": "wizard-installer.js",
-  "features": ["vless-ws", "multi-host-sub", "fragment-option", "singbox", "clash", "bulk-toggle", "telegram"]
+  "wizard": "wizard-installer.js"
 }

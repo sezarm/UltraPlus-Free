@@ -1,12 +1,10 @@
 # Roadmap
 
-| Block | Versions | Status |
-|-------|----------|--------|
-| Panel + users + bot | 0.4–0.5 | done |
-| VLESS core + harden | 0.6.x | done |
+| Block | Version | Status |
+|-------|---------|--------|
+| Panel + VLESS core | 0.6–0.8 | done |
+| Per-user limit + announce + last-seen | **0.9.0** | done |
 | Host wizard file | wizard-installer.js | done |
-| Multi-host + fragment + bulk | **0.8.0** | done |
-| Later | more formats / UI polish | open |
+| Public wizard URL | you add at the end | pending |
 
-When you say «فاز بعد», we advance ~3 phase-steps in one go.
-Wizard public link is added by you at the end (your workers.dev).
+«فاز بعد» ≈ three phase-steps per reply.
