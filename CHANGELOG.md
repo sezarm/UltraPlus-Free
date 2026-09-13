@@ -1,14 +1,13 @@
 # Changelog – UltraPlus-Free
 
-## v0.12.0 (Phases 21–23)
+## v0.13.0 (Phases 24–26)
 
-- **Maintenance mode** – blocks `/sub`, `/client`, and proxy WS
-- **Admin log** on dashboard (recent actions)
-- **Clash** full config with `proxy-groups` (select + url-test) and multi-host
-- CORS on subscription responses
+- **Compile pipeline**: `worker.source.js` + `build.py` → obfuscated `worker.js`
+- Edit source → rebuild → deploy compiled only
+- See BUILD.md
+
+## v0.12.0
+- Maintenance, admin log, Clash groups
 
 ## v0.11.0
-- `/client/:uuid`, IP temp ban, settings import/export
-
-## v0.10.0
-- `/status`, sub profile headers, sessions
+- /client page, IP ban, settings JSON

@@ -1,6 +1,8 @@
 {
   "name": "UltraPlus-Free",
-  "version": "0.12.0",
-  "phase": "21-23",
-  "worker": "worker.js"
+  "version": "0.13.0",
+  "phase": "24-26",
+  "source": "worker.source.js",
+  "compiler": "build.py",
+  "deploy": "worker.js (compiled)"
 }
