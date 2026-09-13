@@ -1,14 +1,14 @@
 /**
- * UltraPlus-Free v0.6.4 - Single File Worker
- * Phase 7.4: port check + live proxy stats (ok/fail/auth)
+ * UltraPlus-Free v0.6.5 - Single File Worker
+ * Phase 7.5: max concurrent WS + Telegram /stats
  * FROM SCRATCH – not copied from other projects
  */
 
 const LANGUAGES = ["en", "fa", "zh"];
 const translations = {
-  en: { title: "UltraPlus-Free", subtitle: "Your private powerful panel", login: "Login", password: "Password", dashboard: "Dashboard", welcome: "Welcome to your panel", status: "Status", online: "Online", users: "Users", configs: "Configs", settings: "Settings", wizard: "Wizard", logout: "Logout", addUser: "Add User", name: "Name", remark: "Remark", enable: "Enable", disable: "Disable", delete: "Delete", subLink: "Sub Link", wrongPass: "Wrong password", noUsers: "No users yet", phase: "v0.6.4", uuid: "UUID", actions: "Actions", passWarning: "This password is ONLY for YOUR panel. Change it after first login.", defaultPass: "Default is admin. Set ADMIN_PASSWORD in Worker variables.", important: "Important", kvNote: "KV optional. Without it users reset on redeploy.", botNote: "Telegram bot optional. Set TELEGRAM_BOT_TOKEN + TELEGRAM_ADMIN_ID.", wizardTitle: "Quick Install Wizard", wizardStep1: "1. Deploy this Worker to your Cloudflare account", wizardStep2: "2. Open /admin and login (default: admin)", wizardStep3: "3. Set ADMIN_PASSWORD in Worker settings", wizardStep4: "4. Add users and share their private /sub/ links", wizardNote: "Self-hosted. Every person creates their own panel.", expire: "Expire (days, 0=never)", traffic: "Traffic GB (0=unlimited)", never: "Never", unlimited: "Unlimited", toggle: "Toggle", copy: "Copy Link" },
-  fa: { title: "UltraPlus-Free", subtitle: "پنل قدرتمند و شخصی شما", login: "ورود", password: "رمز عبور", dashboard: "داشبورد", welcome: "به پنل خودتان خوش آمدید", status: "وضعیت", online: "آنلاین", users: "کاربران", configs: "کانفیگ‌ها", settings: "تنظیمات", wizard: "ویزارد", logout: "خروج", addUser: "افزودن کاربر", name: "نام", remark: "توضیح", enable: "فعال", disable: "غیرفعال", delete: "حذف", subLink: "لینک ساب", wrongPass: "رمز اشتباه است", noUsers: "هنوز کاربری وجود ندارد", phase: "نسخه ۰.۶.۴", uuid: "UUID", actions: "عملیات", passWarning: "این رمز فقط برای پنل شماست. بعد از ورود عوض کنید.", defaultPass: "پیش‌فرض admin است. با ADMIN_PASSWORD عوض کنید.", important: "مهم", kvNote: "KV اختیاری است. بدون آن با ری‌دیپلوی پاک می‌شود.", botNote: "ربات تلگرام اختیاری است.", wizardTitle: "ویزارد نصب سریع", wizardStep1: "۱. Worker را روی Cloudflare خود دیپلوی کنید", wizardStep2: "۲. به /admin بروید (رمز پیش‌فرض: admin)", wizardStep3: "۳. ADMIN_PASSWORD را تنظیم کنید", wizardStep4: "۴. کاربر اضافه کنید و لینک /sub/ بدهید", wizardNote: "کاملاً شخصی. هر نفر پنل خودش را می‌سازد.", expire: "انقضا (روز، ۰=بدون انقضا)", traffic: "حجم گیگ (۰=نامحدود)", never: "بدون انقضا", unlimited: "نامحدود", toggle: "فعال/غیرفعال", copy: "کپی لینک" },
-  zh: { title: "UltraPlus-Free", subtitle: "你的强大私人面板", login: "登录", password: "密码", dashboard: "仪表盘", welcome: "欢迎来到你的面板", status: "状态", online: "在线", users: "用户", configs: "配置", settings: "设置", wizard: "向导", logout: "退出", addUser: "添加用户", name: "名称", remark: "备注", enable: "启用", disable: "禁用", delete: "删除", subLink: "订阅链接", wrongPass: "密码错误", noUsers: "暂无用户", phase: "v0.6.4", uuid: "UUID", actions: "操作", passWarning: "此密码仅属于你的面板。请立即修改。", defaultPass: "默认 admin。请设置 ADMIN_PASSWORD。", important: "重要", kvNote: "KV 可选。没有时重新部署会丢失。", botNote: "Telegram 机器人可选。", wizardTitle: "快速安装向导", wizardStep1: "1. 部署到你的 Cloudflare", wizardStep2: "2. 打开 /admin（默认密码 admin）", wizardStep3: "3. 设置 ADMIN_PASSWORD", wizardStep4: "4. 添加用户并分享 /sub/ 链接", wizardNote: "完全自托管。每人创建自己的面板。", expire: "过期天数 (0=永久)", traffic: "流量GB (0=无限)", never: "永久", unlimited: "无限", toggle: "切换", copy: "复制链接" }
+  en: { title: "UltraPlus-Free", subtitle: "Your private powerful panel", login: "Login", password: "Password", dashboard: "Dashboard", welcome: "Welcome to your panel", status: "Status", online: "Online", users: "Users", configs: "Configs", settings: "Settings", wizard: "Wizard", logout: "Logout", addUser: "Add User", name: "Name", remark: "Remark", enable: "Enable", disable: "Disable", delete: "Delete", subLink: "Sub Link", wrongPass: "Wrong password", noUsers: "No users yet", phase: "v0.6.5", uuid: "UUID", actions: "Actions", passWarning: "This password is ONLY for YOUR panel. Change it after first login.", defaultPass: "Default is admin. Set ADMIN_PASSWORD in Worker variables.", important: "Important", kvNote: "KV optional. Without it users reset on redeploy.", botNote: "Telegram bot optional. Set TELEGRAM_BOT_TOKEN + TELEGRAM_ADMIN_ID.", wizardTitle: "Quick Install Wizard", wizardStep1: "1. Deploy this Worker to your Cloudflare account", wizardStep2: "2. Open /admin and login (default: admin)", wizardStep3: "3. Set ADMIN_PASSWORD in Worker settings", wizardStep4: "4. Add users and share their private /sub/ links", wizardNote: "Self-hosted. Every person creates their own panel.", expire: "Expire (days, 0=never)", traffic: "Traffic GB (0=unlimited)", never: "Never", unlimited: "Unlimited", toggle: "Toggle", copy: "Copy Link" },
+  fa: { title: "UltraPlus-Free", subtitle: "پنل قدرتمند و شخصی شما", login: "ورود", password: "رمز عبور", dashboard: "داشبورد", welcome: "به پنل خودتان خوش آمدید", status: "وضعیت", online: "آنلاین", users: "کاربران", configs: "کانفیگ‌ها", settings: "تنظیمات", wizard: "ویزارد", logout: "خروج", addUser: "افزودن کاربر", name: "نام", remark: "توضیح", enable: "فعال", disable: "غیرفعال", delete: "حذف", subLink: "لینک ساب", wrongPass: "رمز اشتباه است", noUsers: "هنوز کاربری وجود ندارد", phase: "نسخه ۰.۶.۵", uuid: "UUID", actions: "عملیات", passWarning: "این رمز فقط برای پنل شماست. بعد از ورود عوض کنید.", defaultPass: "پیش‌فرض admin است. با ADMIN_PASSWORD عوض کنید.", important: "مهم", kvNote: "KV اختیاری است. بدون آن با ری‌دیپلوی پاک می‌شود.", botNote: "ربات تلگرام اختیاری است.", wizardTitle: "ویزارد نصب سریع", wizardStep1: "۱. Worker را روی Cloudflare خود دیپلوی کنید", wizardStep2: "۲. به /admin بروید (رمز پیش‌فرض: admin)", wizardStep3: "۳. ADMIN_PASSWORD را تنظیم کنید", wizardStep4: "۴. کاربر اضافه کنید و لینک /sub/ بدهید", wizardNote: "کاملاً شخصی. هر نفر پنل خودش را می‌سازد.", expire: "انقضا (روز، ۰=بدون انقضا)", traffic: "حجم گیگ (۰=نامحدود)", never: "بدون انقضا", unlimited: "نامحدود", toggle: "فعال/غیرفعال", copy: "کپی لینک" },
+  zh: { title: "UltraPlus-Free", subtitle: "你的强大私人面板", login: "登录", password: "密码", dashboard: "仪表盘", welcome: "欢迎来到你的面板", status: "状态", online: "在线", users: "用户", configs: "配置", settings: "设置", wizard: "向导", logout: "退出", addUser: "添加用户", name: "名称", remark: "备注", enable: "启用", disable: "禁用", delete: "删除", subLink: "订阅链接", wrongPass: "密码错误", noUsers: "暂无用户", phase: "v0.6.5", uuid: "UUID", actions: "操作", passWarning: "此密码仅属于你的面板。请立即修改。", defaultPass: "默认 admin。请设置 ADMIN_PASSWORD。", important: "重要", kvNote: "KV 可选。没有时重新部署会丢失。", botNote: "Telegram 机器人可选。", wizardTitle: "快速安装向导", wizardStep1: "1. 部署到你的 Cloudflare", wizardStep2: "2. 打开 /admin（默认密码 admin）", wizardStep3: "3. 设置 ADMIN_PASSWORD", wizardStep4: "4. 添加用户并分享 /sub/ 链接", wizardNote: "完全自托管。每人创建自己的面板。", expire: "过期天数 (0=永久)", traffic: "流量GB (0=无限)", never: "永久", unlimited: "无限", toggle: "切换", copy: "复制链接" }
 };
 function t(lang, key) { return (translations[lang] && translations[lang][key]) || translations.en[key] || key; }
 function getLang(request) {
@@ -28,7 +28,8 @@ function uuidv4() {
   });
 }
 let memoryUsers = [];
-let proxyStats = { ok: 0, fail: 0, auth: 0 };
+let proxyStats = { ok: 0, fail: 0, auth: 0, active: 0 };
+const MAX_ACTIVE = 48;
 async function loadUsers(env) {
   if (env.ULTRA_KV) { const data = await env.ULTRA_KV.get("users", "json"); return data || []; }
   return memoryUsers;
@@ -142,6 +143,11 @@ async function pumpRemoteToWs(readable, ws) {
   }
 }
 async function handleVlessSession(ws, env) {
+  if (proxyStats.active >= MAX_ACTIVE) {
+    safeCloseWs(ws, 1013, "busy");
+    return;
+  }
+  proxyStats.active++;
   let writer = null;
   let remote = null;
   let headerParsed = false;
@@ -163,6 +169,7 @@ async function handleVlessSession(ws, env) {
   function shutdown() {
     if (closed) return;
     closed = true;
+    if (proxyStats.active > 0) proxyStats.active--;
     try { if (writer) writer.releaseLock(); } catch (e) {}
     writer = null;
     try { if (remote && remote.close) remote.close(); } catch (e) {}
@@ -252,7 +259,7 @@ function renderDashboard(lang, users, settings) {
   settings = settings || { path: "/", remark: "UltraPlus", sni: "" };
   const active = users.filter(isUserValid).length;
   const pathShow = (settings.path || "/").replace(/</g, "");
-  return baseLayout(lang, t(lang,"dashboard"), `<h2>${t(lang,"welcome")}</h2><div class="grid"><div class="card"><h3>${t(lang,"status")}</h3><p><span class="badge">${t(lang,"online")}</span></p></div><div class="card"><h3>${t(lang,"users")}</h3><p>${users.length}</p></div><div class="card"><h3>Active</h3><p>${active}</p></div><div class="card"><h3>${t(lang,"phase")}</h3><p>0.6.4</p></div><div class="card"><h3>Proxy</h3><p><span class="badge">VLESS/WS</span></p></div><div class="card"><h3>WS Path</h3><p style="font-size:1rem">${pathShow}</p></div><div class="card"><h3>Proxy OK</h3><p>${proxyStats.ok}</p></div><div class="card"><h3>Proxy Fail</h3><p>${proxyStats.fail}</p></div><div class="card"><h3>Auth Deny</h3><p>${proxyStats.auth}</p></div></div><div class="note">${t(lang,"kvNote")}<br>${t(lang,"botNote")}<br>Core 7.4: port check + live proxy stats (ok/fail/auth).</div>`);
+  return baseLayout(lang, t(lang,"dashboard"), `<h2>${t(lang,"welcome")}</h2><div class="grid"><div class="card"><h3>${t(lang,"status")}</h3><p><span class="badge">${t(lang,"online")}</span></p></div><div class="card"><h3>${t(lang,"users")}</h3><p>${users.length}</p></div><div class="card"><h3>Active</h3><p>${active}</p></div><div class="card"><h3>${t(lang,"phase")}</h3><p>0.6.5</p></div><div class="card"><h3>Proxy</h3><p><span class="badge">VLESS/WS</span></p></div><div class="card"><h3>WS Path</h3><p style="font-size:1rem">${pathShow}</p></div><div class="card"><h3>Proxy OK</h3><p>${proxyStats.ok}</p></div><div class="card"><h3>Proxy Fail</h3><p>${proxyStats.fail}</p></div><div class="card"><h3>Auth Deny</h3><p>${proxyStats.auth}</p></div><div class="card"><h3>Active WS</h3><p>${proxyStats.active}</p></div></div><div class="note">${t(lang,"kvNote")}<br>${t(lang,"botNote")}<br>Core 7.5: max 48 concurrent WS + /stats on Telegram.</div>`);
 }
 function renderUsers(lang, host, users) {
   let rows = users.length ? "" : `<tr><td colspan="6">${t(lang,"noUsers")}</td></tr>`;
@@ -268,11 +275,11 @@ function renderUsers(lang, host, users) {
   return baseLayout(lang, t(lang,"users"), `<h2>${t(lang,"users")}</h2><form method="POST" action="/admin/users/add" style="padding:1rem;background:var(--c);border-radius:.75rem;margin:1rem 0"><input name="name" placeholder="${t(lang,"name")}" required> <input name="remark" placeholder="${t(lang,"remark")}"> <input name="expireDays" type="number" min="0" value="0"> <input name="totalGB" type="number" min="0" value="0"> <input type="hidden" name="lang" value="${lang}"> <button class="btn" type="submit">${t(lang,"addUser")}</button></form><table><thead><tr><th>${t(lang,"name")}</th><th>${t(lang,"uuid")}</th><th>${t(lang,"status")}</th><th>Expire</th><th>Traffic</th><th>${t(lang,"actions")}</th></tr></thead><tbody>${rows}</tbody></table>`);
 }
 function renderConfigs(lang, host) {
-  return baseLayout(lang, t(lang,"configs"), `<h2>${t(lang,"configs")}</h2><div class="note">/sub/<uuid> — base64 | raw | clash<br>VLESS WS 0.6.4: path must match Settings. TCP only; no UDP on free Worker.</div><p>Base: https://${host}/sub/<uuid></p>`);
+  return baseLayout(lang, t(lang,"configs"), `<h2>${t(lang,"configs")}</h2><div class="note">/sub/<uuid> — base64 | raw | clash<br>VLESS WS 0.6.5: path must match Settings. TCP only; max 48 concurrent WS.</div><p>Base: https://${host}/sub/<uuid></p>`);
 }
 function renderSettings(lang, settings) {
   settings = settings || { path: "/", remark: "UltraPlus", sni: "" };
-  return baseLayout(lang, t(lang,"settings"), `<h2>${t(lang,"settings")}</h2><div class="warn">${t(lang,"passWarning")}<br>${t(lang,"defaultPass")}</div><form method="POST" action="/admin/settings/save" style="padding:1rem;background:var(--c);border-radius:.75rem"><div>WS Path (must match client)<br><input name="path" value="${(settings.path||"/").replace(/"/g,"")}"></div><div>Remark<br><input name="remark" value="${(settings.remark||"UltraPlus").replace(/"/g,"")}"></div><div>SNI<br><input name="sni" value="${(settings.sni||"").replace(/"/g,"")}"></div><input type="hidden" name="lang" value="${lang}"><button class="btn" type="submit">Save</button><p style="font-size:.8rem;opacity:.7">Needs KV. Path used by proxy core.</p></form><div class="note">Bot: /status /users /add /toggle /del /link /help</div>`);
+  return baseLayout(lang, t(lang,"settings"), `<h2>${t(lang,"settings")}</h2><div class="warn">${t(lang,"passWarning")}<br>${t(lang,"defaultPass")}</div><form method="POST" action="/admin/settings/save" style="padding:1rem;background:var(--c);border-radius:.75rem"><div>WS Path (must match client)<br><input name="path" value="${(settings.path||"/").replace(/"/g,"")}"></div><div>Remark<br><input name="remark" value="${(settings.remark||"UltraPlus").replace(/"/g,"")}"></div><div>SNI<br><input name="sni" value="${(settings.sni||"").replace(/"/g,"")}"></div><input type="hidden" name="lang" value="${lang}"><button class="btn" type="submit">Save</button><p style="font-size:.8rem;opacity:.7">Needs KV. Path used by proxy core.</p></form><div class="note">Bot: /status /stats /users /add /toggle /del /link /help</div>`);
 }
 function renderWizard(lang) {
   const dir = lang === "fa" ? "rtl" : "ltr";
@@ -299,11 +306,19 @@ export default {
         const text = (msg.text || "").trim();
         const isAdmin = env.TELEGRAM_ADMIN_ID && chatId === String(env.TELEGRAM_ADMIN_ID);
         if (text === "/start" || text === "/help") {
-          await sendTelegram(env, chatId, isAdmin ? "✅ UltraPlus Admin\n/status /users /add Name /toggle ID /del ID /link ID /help" : "Private bot.");
+          await sendTelegram(env, chatId, isAdmin ? "✅ UltraPlus Admin\n/status /stats /users /add Name /toggle ID /del ID /link ID /help" : "Private bot.");
         } else if (!isAdmin) await sendTelegram(env, chatId, "Access denied.");
-        else if (text === "/status") {
+        else if (text === "/status" || text === "/stats") {
           const users = await loadUsers(env);
-          await sendTelegram(env, chatId, "Users: " + users.length + " Active: " + users.filter(isUserValid).length + " v0.6.4");
+          await sendTelegram(env, chatId,
+            "Users: " + users.length +
+            "\nActive users: " + users.filter(isUserValid).length +
+            "\nProxy OK: " + proxyStats.ok +
+            "\nProxy Fail: " + proxyStats.fail +
+            "\nAuth Deny: " + proxyStats.auth +
+            "\nWS Active: " + proxyStats.active +
+            "\nv0.6.5"
+          );
         } else if (text === "/users") {
           const users = await loadUsers(env);
           await sendTelegram(env, chatId, users.length ? users.map(function(u){return u.name+"|"+(u.enable?"ON":"OFF")+"|"+u.id.slice(0,8);}).join("\n") : "No users");
@@ -420,9 +435,9 @@ export default {
 
     if (path === "/health") {
       const users = await loadUsers(env);
-      return Response.json({ status: "ok", project: "UltraPlus-Free", version: "0.6.4", phase: "7.4", users: users.length, active: users.filter(isUserValid).length, kv: !!env.ULTRA_KV, telegram: !!env.TELEGRAM_BOT_TOKEN, proxy: true, pathMatch: true, hardened: true, queueCap: 64, stats: proxyStats });
+      return Response.json({ status: "ok", project: "UltraPlus-Free", version: "0.6.5", phase: "7.5", users: users.length, active: users.filter(isUserValid).length, kv: !!env.ULTRA_KV, telegram: !!env.TELEGRAM_BOT_TOKEN, proxy: true, pathMatch: true, hardened: true, queueCap: 64, stats: proxyStats, maxActive: MAX_ACTIVE });
     }
 
-    return new Response("UltraPlus-Free v0.6.4 – /admin or /wizard", { headers: { "Content-Type": "text/plain;charset=utf-8" } });
+    return new Response("UltraPlus-Free v0.6.5 – /admin or /wizard", { headers: { "Content-Type": "text/plain;charset=utf-8" } });
   },
 };
