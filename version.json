@@ -1,7 +1,7 @@
 {
   "name": "UltraPlus-Free",
-  "version": "0.6.7",
-  "phase": "7.7-import-checklist",
+  "version": "0.6.8",
+  "phase": "8.0-singbox-stats-reset",
   "worker": "worker.js",
   "license": "MIT",
   "proxy": {
@@ -9,11 +9,9 @@
     "network": "ws",
     "pathMatch": true,
     "udp": false,
+    "formats": ["base64", "raw", "clash", "singbox"],
     "queueCap": 64,
     "maxActive": 48,
-    "stats": true,
-    "export": true,
-    "import": true,
     "status": "alpha-hardened"
   }
 }

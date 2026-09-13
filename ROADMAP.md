@@ -6,14 +6,14 @@
 |-------|---------|--------|
 | 1–4 | Panel, users, Telegram | 0.4.x |
 | 5–6 | Sub formats + settings | 0.5.0 |
-| 7.0–7.6 | VLESS/WS core + harden + export/fp | 0.6.0–0.6.6 |
-| **7.7** | Import users JSON + client checklist | **0.6.7** |
+| 7.x | VLESS/WS core + harden + import/export | 0.6.0–0.6.7 |
+| **8.0** | Sing-box sub + reset stats | **0.6.8** |
 
 ## Next (optional)
 
-- Real-client stability notes from community
-- Keep worker lean (avoid Cloudflare 1011)
-- Phase 8: nicer UI polish / more sub formats if needed
+- Community client tips
+- Keep worker lean (avoid 1011)
+- UI polish / more languages as needed
 
 ## Principles
 

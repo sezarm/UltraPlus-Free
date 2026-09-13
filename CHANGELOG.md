@@ -1,16 +1,19 @@
 # Changelog – UltraPlus-Free
 
-## v0.6.7 (Phase 7.7)
+## v0.6.8 (Phase 8.0)
+
+### Subscription
+- **Sing-box** format: `?format=singbox` (or `sb` / `sing-box`)
 
 ### Panel
-- **Import users**: paste Export JSON on Users page (merge by UUID)
-- Client checklist on Dashboard (path / UUID / TLS / ws / TCP-only)
+- **Reset proxy stats** button on Dashboard
+- Configs page lists all formats clearly
+
+## v0.6.7
+- Import users JSON + client checklist
 
 ## v0.6.6
-- Export users JSON + custom TLS fingerprint (fp)
+- Export JSON + TLS fingerprint (fp)
 
-## v0.6.5
-- Max 48 concurrent WS + Telegram `/stats`
-
-## v0.6.4 – 0.6.0
-- Stats, path match, VLESS/WS core
+## v0.6.5 – 0.6.0
+- Concurrent limit, stats, VLESS/WS core
