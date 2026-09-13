@@ -1,17 +1,12 @@
 {
   "name": "UltraPlus-Free",
-  "version": "0.6.8",
-  "phase": "8.0-singbox-stats-reset",
+  "version": "0.7.0",
+  "phase": "9.0-wizard-auto-deploy",
   "worker": "worker.js",
   "license": "MIT",
-  "proxy": {
-    "protocol": "vless",
-    "network": "ws",
-    "pathMatch": true,
-    "udp": false,
-    "formats": ["base64", "raw", "clash", "singbox"],
-    "queueCap": 64,
-    "maxActive": 48,
-    "status": "alpha-hardened"
+  "wizard": {
+    "autoDeploy": true,
+    "method": "cloudflare-api-token",
+    "creates": ["worker", "kv", "admin_password_secret"]
   }
 }

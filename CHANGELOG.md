@@ -1,19 +1,15 @@
 # Changelog – UltraPlus-Free
 
-## v0.6.8 (Phase 8.0)
+## v0.7.0 (Phase 9.0)
 
-### Subscription
-- **Sing-box** format: `?format=singbox` (or `sb` / `sing-box`)
+### Auto-Install Wizard
+- `/wizard` form: Account ID + API Token + Worker name + password
+- Creates **KV** (`ULTRA_KV`) and uploads latest `worker.js` from GitHub
+- Enables workers.dev subdomain when possible
+- **Token is never stored**
 
-### Panel
-- **Reset proxy stats** button on Dashboard
-- Configs page lists all formats clearly
+## v0.6.8
+- Sing-box format + reset stats
 
-## v0.6.7
-- Import users JSON + client checklist
-
-## v0.6.6
-- Export JSON + TLS fingerprint (fp)
-
-## v0.6.5 – 0.6.0
-- Concurrent limit, stats, VLESS/WS core
+## v0.6.7 – 0.6.0
+- Import/export, core VLESS/WS, harden

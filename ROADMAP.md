@@ -4,20 +4,12 @@
 
 | Phase | Content | Version |
 |-------|---------|--------|
-| 1–4 | Panel, users, Telegram | 0.4.x |
-| 5–6 | Sub formats + settings | 0.5.0 |
-| 7.x | VLESS/WS core + harden + import/export | 0.6.0–0.6.7 |
-| **8.0** | Sing-box sub + reset stats | **0.6.8** |
+| 1–7 | Panel + VLESS/WS core | 0.6.x |
+| 8 | Sing-box + stats reset | 0.6.8 |
+| **9** | **API Token auto-deploy wizard** | **0.7.0** |
 
-## Next (optional)
+## Next
 
-- Community client tips
-- Keep worker lean (avoid 1011)
-- UI polish / more languages as needed
-
-## Principles
-
-1. Self-hosted only
-2. No copy of Nova/BPB binaries
-3. From-scratch lean core
-4. Docs EN + FA
+- Harden deploy error messages
+- Optional custom domain bind via API
+- Keep single-file lean
