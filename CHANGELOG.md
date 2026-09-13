@@ -1,13 +1,14 @@
 # Changelog – UltraPlus-Free
 
-## v0.11.0 (Phases 18–20)
+## v0.12.0 (Phases 21–23)
 
-- **/client/&lt;uuid&gt;** – user page with sub links (no admin login)
-- **Temp IP block** after repeated bad UUID auth (8 fails → 15 min)
-- **Export / import settings** JSON from Settings page
+- **Maintenance mode** – blocks `/sub`, `/client`, and proxy WS
+- **Admin log** on dashboard (recent actions)
+- **Clash** full config with `proxy-groups` (select + url-test) and multi-host
+- CORS on subscription responses
+
+## v0.11.0
+- `/client/:uuid`, IP temp ban, settings import/export
 
 ## v0.10.0
-- Public `/status`, sub profile headers, session counters
-
-## v0.9.0
-- Per-user WS limit, announcement, last-seen
+- `/status`, sub profile headers, sessions
