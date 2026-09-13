@@ -1,23 +1,20 @@
 # Changelog – UltraPlus-Free
 
-## v0.6.2 (Phase 7.2 – hardened core)
+## v0.6.3 (Phase 7.3)
 
-### Core stability
-- Write queue for orderly TCP writes
-- Clean shutdown on close/error
-- Immediate VLESS response header after connect
-- Header size guard (drop bad early data > 2KB)
-- Path match with panel Settings (from 0.6.1)
+### Core / Panel
+- Write queue capped at 64 chunks (protect Worker memory)
+- Cleaner remote connect failure (close WS with connect-fail)
+- Dashboard shows **Proxy** badge + current **WS Path**
 
-### Limits
-- TCP only
-- UDP not on free Cloudflare Worker
+## v0.6.2
+- Write queue, clean shutdown, early VLESS response, header guard
 
 ## v0.6.1
-- WS path must match Settings → WS Path
+- WS path must match Settings
 
 ## v0.6.0
-- First lean VLESS-over-WebSocket core
+- Lean VLESS-over-WebSocket core
 
 ## v0.5.x / 0.4.x
 - Panel, formats, Telegram, INSTALL

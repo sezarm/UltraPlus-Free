@@ -1,7 +1,7 @@
 {
   "name": "UltraPlus-Free",
-  "version": "0.6.2",
-  "phase": "7.2-hardened",
+  "version": "0.6.3",
+  "phase": "7.3-queue-dashboard",
   "worker": "worker.js",
   "license": "MIT",
   "proxy": {
@@ -9,7 +9,7 @@
     "network": "ws",
     "pathMatch": true,
     "udp": false,
-    "writeQueue": true,
+    "queueCap": 64,
     "status": "alpha-hardened"
   }
 }
