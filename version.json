@@ -1,7 +1,7 @@
 {
   "name": "UltraPlus-Free",
-  "version": "0.6.6",
-  "phase": "7.6-export-fp",
+  "version": "0.6.7",
+  "phase": "7.7-import-checklist",
   "worker": "worker.js",
   "license": "MIT",
   "proxy": {
@@ -13,6 +13,7 @@
     "maxActive": 48,
     "stats": true,
     "export": true,
+    "import": true,
     "status": "alpha-hardened"
   }
 }
