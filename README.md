@@ -1,143 +1,81 @@
-# 🚀 UltraPlus-Free v0.4.1
+# 🚀 UltraPlus-Free v0.5.0
 
 **Your own private multi-language control panel on a single Cloudflare Worker**  
 Free • MIT • Self-hosted • English / فارسی / 中文
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.4.1-blueviolet.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.5.0-blueviolet.svg)](CHANGELOG.md)
 
 ---
 
-## ⚠️ Important – Read First
+## ⚠️ Important
 
 **Every person deploys their own panel on their own Cloudflare account.**
 
-- There is **no central server** and no middleman.
-- The admin password belongs **only** to the person who deployed the panel.
-- Default password is `admin` → **change it immediately** after first login.
-- Never share `/admin` or your password. User subscription links are credentials.
+- No central server.
+- Admin password is only yours. Default: `admin` → **change it** via `ADMIN_PASSWORD`.
+- Never share `/admin`. User `/sub/` links are credentials.
 
-This project is a **management panel + subscription link generator**.  
-It is written from scratch (inspired by community tools at the feature level only).
+This is a **management panel + subscription generator** (written from scratch).
 
 ---
 
-## What it does
+## Features (v0.5.0)
 
 | Feature | Status |
 |---------|--------|
 | Multi-language UI (EN / FA / ZH) + RTL | ✅ |
-| Admin login with session cookie | ✅ |
-| Multi-user management | ✅ |
-| Expire date + traffic limit (GB) | ✅ |
-| Enable / Disable user (toggle) | ✅ |
-| Private subscription link per user | ✅ |
-| VLESS link generation | ✅ |
-| Subscription-Userinfo headers | ✅ |
-| Optional KV (persistent users) | ✅ |
-| Install Wizard page (`/wizard`) | ✅ |
-| Telegram bot (admin only) | ✅ |
-| Single-file `worker.js` upload | ✅ |
-| Full install guide (EN + FA) | ✅ |
+| Admin login | ✅ |
+| Users: expire, traffic GB, enable/disable | ✅ |
+| Private `/sub/<uuid>` links | ✅ |
+| Sub formats: **base64** / **raw** / **clash** | ✅ |
+| Panel settings: path, remark, SNI (KV) | ✅ |
+| Optional KV | ✅ |
+| Telegram bot: /add /toggle /del /link /status /users | ✅ |
+| Wizard + health | ✅ |
 
 ---
 
-## Quick start (easiest)
+## Quick start
 
 1. Download **[worker.js](worker.js)**
-2. Open [Cloudflare Dashboard](https://dash.cloudflare.com) → **Workers & Pages** → **Create Worker**
-3. Paste the content of `worker.js` → **Deploy**
-4. Open `https://<your-worker>.workers.dev/admin`
-5. Login with `admin`
-6. Set `ADMIN_PASSWORD` in Worker → Settings → Variables
+2. Cloudflare → Workers → Create Worker → paste → Deploy
+3. Open `/admin` → login `admin`
+4. Set `ADMIN_PASSWORD` in Worker Variables
+5. (Recommended) Bind KV as `ULTRA_KV`
 
-**Full step-by-step (KV + Telegram + links):** see **[INSTALL.md](INSTALL.md)**
-
----
-
-## Developer install
-
-```bash
-git clone https://github.com/sezarm/UltraPlus-Free.git
-cd UltraPlus-Free
-npm install
-npx wrangler login
-npm run deploy
-```
+Full guide: **[INSTALL.md](INSTALL.md)**
 
 ---
 
-## Routes
+## Subscription formats
 
-| Path | Description |
-|------|-------------|
-| `/` or `/login` | Admin login |
-| `/admin` | Dashboard |
-| `/admin/users` | User management (add / toggle / delete) |
-| `/admin/configs` | Subscription info |
-| `/admin/settings` | Settings & warnings |
-| `/wizard` | Install guide page |
-| `/sub/<uuid>` | Private subscription link |
-| `/telegram` | Telegram webhook |
-| `/health` | Health check JSON |
-
----
-
-## Optional: KV (recommended)
-
-Without KV, users are stored in memory and reset on every redeploy.
-
-1. Create a KV namespace in Cloudflare
-2. Bind it as `ULTRA_KV` on your Worker
-3. Redeploy if needed
-
-Details in [INSTALL.md](INSTALL.md).
-
----
-
-## Optional: Telegram bot
-
-1. Create a bot with [@BotFather](https://t.me/BotFather)
-2. Set variables:
-   - `TELEGRAM_BOT_TOKEN`
-   - `TELEGRAM_ADMIN_ID` (your numeric Telegram ID)
-3. Set webhook:
 ```text
-https://api.telegram.org/bot<TOKEN>/setWebhook?url=https://YOUR-WORKER.workers.dev/telegram
+https://YOUR-WORKER/sub/<uuid>              → base64 (default)
+https://YOUR-WORKER/sub/<uuid>?format=raw   → plain VLESS
+https://YOUR-WORKER/sub/<uuid>?format=clash → Clash Meta block
 ```
-4. Commands: `/start` `/status` `/users` `/help`
+
+---
+
+## Telegram (optional)
+
+Variables: `TELEGRAM_BOT_TOKEN` + `TELEGRAM_ADMIN_ID`  
+Webhook: `.../setWebhook?url=https://YOUR-WORKER/telegram`
+
+Commands: `/status` `/users` `/add Name` `/toggle ID` `/del ID` `/link ID` `/help`
 
 ---
 
 ## فارسی
 
-**هر کسی پنل خودش را روی اکانت Cloudflare خودش می‌سازد.**  
-رمز ادمین فقط مال همان شخص است.
+هر نفر پنل خودش را می‌سازد. رمز پیش‌فرض `admin` را عوض کنید.  
+فایل: [worker.js](worker.js) · راهنما: [INSTALL.md](INSTALL.md)
 
-- رمز پیش‌فرض: `admin` → حتماً عوض کنید
-- فایل آماده: [worker.js](worker.js)
-- راهنمای کامل نصب: [INSTALL.md](INSTALL.md)
-
-### قابلیت‌ها
-- پنل سه‌زبانه + راست‌چین
-- مدیریت چند کاربر (انقضا، حجم، فعال/غیرفعال)
-- لینک سابسکریپشن خصوصی
-- KV اختیاری
-- ربات تلگرام اختیاری
-
----
-
-## 中文
-
-**每个人都在自己的 Cloudflare 账户上部署自己的面板。**  
-默认密码 `admin`，请立即修改。
-
-完整安装说明见 [INSTALL.md](INSTALL.md)。
+فرمت ساب: `?format=base64` | `raw` | `clash`
 
 ---
 
 ## License
 
-MIT – Free for personal and community use.
-
-**Built for freedom. Each person owns their own panel.**
+MIT — each person owns their own panel.

@@ -1,7 +1,7 @@
 {
   "name": "ultraplus-free",
-  "version": "0.4.1",
-  "description": "Self-hosted multi-language Cloudflare Worker panel with user management, subscription links, Wizard and Telegram bot",
+  "version": "0.5.0",
+  "description": "Self-hosted multi-language Cloudflare Worker panel with users, sub formats, settings, Telegram bot",
   "main": "src/index.ts",
   "scripts": {
     "dev": "wrangler dev",
@@ -9,16 +9,7 @@
     "build": "wrangler deploy --dry-run",
     "tail": "wrangler tail"
   },
-  "keywords": [
-    "cloudflare",
-    "workers",
-    "panel",
-    "subscription",
-    "multi-language",
-    "self-hosted",
-    "vless"
-  ],
-  "author": "UltraPlus-Free",
+  "keywords": ["cloudflare", "workers", "panel", "subscription", "self-hosted", "vless"],
   "license": "MIT",
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240909.0",
