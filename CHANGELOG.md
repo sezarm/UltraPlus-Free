@@ -1,17 +1,14 @@
 # Changelog – UltraPlus-Free
 
-## v0.9.0 (Phases 12–14)
+## v0.10.0 (Phases 15–17)
 
-- **Max connections per user** (Settings, default 2)
-- **Announcement** on admin dashboard
-- **Last seen** + live WS count per user on Users page
-- Keeps: multi-host sub, fragment, bulk enable/disable, Sing-box, VLESS/WS core
+- **Public status page**: `/status` (no login)
+- **Subscription headers**: Profile-Title, Announce, Support URL, Userinfo
+- **Session counter** per UUID (shown on Users page)
+- Still: per-user WS limit, last-seen, multi-host, fragment
 
-## v0.8.0 (Phases 9–11)
+## v0.9.0
+- Max connections per user, announcement, last-seen
 
-- Extra hosts / clean IPs in subscription
-- Fragment option, enable/disable all
-
-## Wizard
-
-- `wizard-installer.js` – deploy privately; share only your link
+## v0.8.0
+- Extra hosts, fragment, bulk toggle
