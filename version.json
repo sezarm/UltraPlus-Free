@@ -1,7 +1,7 @@
 {
   "name": "UltraPlus-Free",
-  "version": "0.10.0",
-  "phase": "15-17",
+  "version": "0.11.0",
+  "phase": "18-20",
   "worker": "worker.js",
-  "public": ["/status", "/health"]
+  "routes": ["/admin", "/sub/:uuid", "/client/:uuid", "/status", "/health"]
 }

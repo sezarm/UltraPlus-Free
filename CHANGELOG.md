@@ -1,14 +1,13 @@
 # Changelog – UltraPlus-Free
 
-## v0.10.0 (Phases 15–17)
+## v0.11.0 (Phases 18–20)
 
-- **Public status page**: `/status` (no login)
-- **Subscription headers**: Profile-Title, Announce, Support URL, Userinfo
-- **Session counter** per UUID (shown on Users page)
-- Still: per-user WS limit, last-seen, multi-host, fragment
+- **/client/&lt;uuid&gt;** – user page with sub links (no admin login)
+- **Temp IP block** after repeated bad UUID auth (8 fails → 15 min)
+- **Export / import settings** JSON from Settings page
+
+## v0.10.0
+- Public `/status`, sub profile headers, session counters
 
 ## v0.9.0
-- Max connections per user, announcement, last-seen
-
-## v0.8.0
-- Extra hosts, fragment, bulk toggle
+- Per-user WS limit, announcement, last-seen
