@@ -1,10 +1,7 @@
 # Roadmap
 
-| Block | Version | Status |
-|-------|---------|--------|
-| Panel + VLESS core | 0.6–0.8 | done |
-| Per-user limit + announce + last-seen | **0.9.0** | done |
-| Host wizard file | wizard-installer.js | done |
-| Public wizard URL | you add at the end | pending |
+## Phase 1 (current)
+Modular tree, setup wizard, PBKDF2 auth, D1 migrations, health
 
-«فاز بعد» ≈ three phase-steps per reply.
+## Next
+Users · Subscriptions · Protocols · Telegram · Backup · Diagnostics

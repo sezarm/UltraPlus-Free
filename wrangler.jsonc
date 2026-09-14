@@ -1,0 +1,29 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ultraplus-free",
+  "main": "src/index.js",
+  "compatibility_date": "2024-09-23",
+  "workers_dev": true,
+  "vars": {
+    "APP_NAME": "UltraPlus-Free",
+    "APP_VERSION": "1.0.0-phase1"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "ULTRA_KV",
+      "id": "REPLACE_WITH_YOUR_KV_ID",
+      "preview_id": "REPLACE_WITH_PREVIEW_KV_ID"
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "ultraplus-db",
+      "database_id": "REPLACE_WITH_YOUR_D1_ID",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "triggers": {
+    "crons": ["0 */6 * * *"]
+  }
+}

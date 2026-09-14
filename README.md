@@ -1,21 +1,27 @@
-# UltraPlus-Free v7.0
+# UltraPlus-Free
 
-پنل Cloudflare Worker شبیه مدل BPB:
+Self-hosted **Cloudflare Workers** management platform — modular, secure, Persian-first.
 
-- **بدون ساخت کاربر** اشتراک مالک آماده است: `/sub`
-- **~۱۰۰+ کانفیگ** روی IP/دامنه‌های Cloudflare + دامنه Worker
-- منوی **همبرگری** موبایل
-- VLESS + Trojan + Fragment hint
-- Clash / raw / base64
+> Phase **1.0.0-phase1**: architecture, setup wizard, auth, health, dashboard shell.
 
-## نصب (گوشی)
+## Not a clone
+Original modular design. No proprietary code from other panels.
 
-1. فایل [worker.js](./worker.js) را Raw کن و کپی کن
-2. Cloudflare → Create Worker → Paste → Deploy
-3. KV Binding نام: `ULTRA_KV`
-4. Secret: `ADMIN_PASSWORD`
-5. برو `/admin` → کپی لینک `/sub`
+## Stack
+Workers · D1 · KV · Vanilla UI · Wrangler
 
-رمز پیش‌فرض: `admin`
+## Quick start
+See [docs/INSTALL.md](./docs/INSTALL.md)
 
+```bash
+npm i
+# set KV + D1 ids in wrangler.jsonc
+npm run deploy
+```
+
+Open `/setup` once, then `/admin`.
+
+Also see [README.fa.md](./README.fa.md) · [Architecture](./docs/ARCHITECTURE.md)
+
+## License
 MIT

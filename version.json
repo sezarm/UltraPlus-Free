@@ -1,5 +1,7 @@
 {
-  "version": "7.0.0",
-  "style": "BPB-like multi-config on CF IPs",
-  "owner_sub": "/sub"
+  "version": "1.0.0-phase1",
+  "channel": "stable",
+  "release_date": "2026-09-14",
+  "phase": 1,
+  "name": "UltraPlus-Free"
 }
