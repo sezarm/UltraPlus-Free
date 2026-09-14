@@ -1,6 +1,5 @@
 {
-  "version": "1.8.0",
+  "version": "1.9.0",
   "channel": "stable",
-  "phase": 8,
-  "features": ["chain-socks5-http", "warp-wireguard-conf", "singbox-sub"]
+  "notes": "phases 9-12: quota enforce, host health, multi-admin, sub rate limit"
 }

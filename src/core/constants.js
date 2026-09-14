@@ -1,5 +1,5 @@
 export const APP_NAME = "UltraPlus-Free";
-export const APP_VERSION = "1.7.0";
+export const APP_VERSION = "1.9.0";
 export const PATHS = { HEALTH: "/healthz", SETUP: "/setup", ADMIN: "/admin", API: "/api", SUB: "/sub", LOGIN: "/login", LOGOUT: "/logout" };
 export const SESSION_COOKIE = "up_session";
 export const SESSION_TTL_SEC = 86400;

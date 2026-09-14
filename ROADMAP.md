@@ -1,10 +1,13 @@
 # Roadmap
 
-## Completed
-1–7 Core through tests
-8 Chain (SOCKS5/HTTP) · WARP conf · Sing-box sub
+## Done (through 1.9.0)
+1–8 product core
+9 Quota/expiry on proxy
+10 Host health scan
+11 Multi-admin
+12 Sub rate limit
 
-## Next ideas
-9 Rate/quota enforcement on proxy path
-10 Auto IP radar / health checks on host pool
-11 Multi-admin roles
+## Later
+- Finer traffic metering
+- IP radar lists
+- Roles beyond admin

@@ -1,21 +1,17 @@
 # Changelog
 
-## 1.7.0 — 2026-09-14
-### Phase 5 Telegram
-- Webhook `/telegram/webhook`
-- Commands: start, status, users, adduser, enable, disable, delete, stats
-- Admin IDs only
+## 1.9.0
+- Proxy: enforce disabled / expired / quota
+- Approximate quota accounting on uplink
+- Host pool health scan (+ optional disable unhealthy)
+- Multi-admin (D1 + KV extra)
+- Sub endpoint rate limit (60/min per token+IP)
+- Reset quota button
 
-### Phase 6 Backup / Diagnostics / PWA
-- Export/import JSON backup
-- Diagnostics page + `/api/diagnostics`
-- manifest + service worker
-- Audit log
+## 1.8.0
+Chain · WARP · Sing-box
 
-### Phase 7 Quality
-- Unit tests (ids, backup)
-- CI verify + tests
+## 1.7.0
+Telegram · Backup · Diagnostics · PWA · Tests
 
-## 1.3.0 Protocols + Network
-## 1.1.0 Users
-## 1.0.0 Core
+Earlier: core, users, protocols, network
