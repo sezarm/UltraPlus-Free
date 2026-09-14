@@ -1,22 +1,10 @@
-# Deploy UltraPlus-Free v5.1.0
+# Deploy v5.2.0
 
-## Important
+1. Download **worker.js** from latest chat artifact (full ~83KB minified)
+2. GitHub: Add file → Upload files → overwrite `worker.js` (if repo shows tiny placeholder)
+3. Cloudflare Workers → paste entire file → Deploy
+4. KV binding name: `ULTRA_KV`
+5. Variable: `ADMIN_PASSWORD`
+6. Open `/admin`
 
-The production `worker.js` is ~80KB (minified). If GitHub shows a tiny placeholder, replace it:
-
-1. Download the file from the chat / release artifact
-2. GitHub → **Add file → Upload files** → upload as `worker.js`
-3. Cloudflare → Workers → paste entire file → Deploy
-
-## Cloudflare setup
-
-| Item | Value |
-|------|--------|
-| KV binding | `ULTRA_KV` |
-| `ADMIN_PASSWORD` | your password |
-| `SUB_TOKEN` | optional |
-| Telegram | optional |
-
-## Features vs BPB
-
-Multi-user panel, VLESS+Trojan, DoH, Chain SOCKS5/HTTP, Warp-in-sub, routing, APIs, batch users, backup JSON.
+Verify file contains: `v5.2.0`, `export default`, `cloudflare:sockets`

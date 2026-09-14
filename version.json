@@ -1,5 +1,8 @@
 {
   "name": "UltraPlus-Free",
-  "version": "5.1.0",
-  "note": "Full worker.js must be complete minified single file"
+  "version": "5.2.0",
+  "phase": "202-211",
+  "status": "stable",
+  "worker_bytes_approx": 83000,
+  "upload": "Upload full worker.js via GitHub UI if API placeholder appears"
 }
