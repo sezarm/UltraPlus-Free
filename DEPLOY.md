@@ -1,10 +1,10 @@
-# Deploy v5.2.0
+# Deploy
 
-1. Download **worker.js** from latest chat artifact (full ~83KB minified)
-2. GitHub: Add file → Upload files → overwrite `worker.js` (if repo shows tiny placeholder)
-3. Cloudflare Workers → paste entire file → Deploy
-4. KV binding name: `ULTRA_KV`
-5. Variable: `ADMIN_PASSWORD`
-6. Open `/admin`
+آموزش کامل فارسی (موبایل): **[INSTALL-FA.md](./INSTALL-FA.md)**  
+English: **[INSTALL-EN.md](./INSTALL-EN.md)**
 
-Verify file contains: `v5.2.0`, `export default`, `cloudflare:sockets`
+1. Paste full `worker.js` in Cloudflare Worker
+2. KV binding name: `ULTRA_KV`
+3. Variable: `ADMIN_PASSWORD`
+
+No terminal required.

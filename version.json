@@ -3,6 +3,5 @@
   "version": "5.2.0",
   "phase": "202-211",
   "status": "stable",
-  "worker_bytes_approx": 83000,
-  "upload": "Upload full worker.js via GitHub UI if API placeholder appears"
+  "install": "INSTALL-FA.md"
 }
