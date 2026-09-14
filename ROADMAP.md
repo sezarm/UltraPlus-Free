@@ -1,8 +1,10 @@
 # Roadmap
 
-## Completed 1–7
-1 Architecture · 2 Users · 3 Protocols · 4 Network
-5 Telegram · 6 Backup/Diagnostics/PWA · 7 Tests/Audit
+## Completed
+1–7 Core through tests
+8 Chain (SOCKS5/HTTP) · WARP conf · Sing-box sub
 
-## Future v2
-Chain / Warp · Plugins · Multi-instance
+## Next ideas
+9 Rate/quota enforcement on proxy path
+10 Auto IP radar / health checks on host pool
+11 Multi-admin roles

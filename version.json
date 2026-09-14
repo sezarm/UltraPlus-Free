@@ -1,6 +1,6 @@
 {
-  "version": "1.7.0",
+  "version": "1.8.0",
   "channel": "stable",
-  "phases": [1, 2, 3, 4, 5, 6, 7],
-  "features": ["telegram-bot", "backup", "diagnostics", "pwa", "audit-log", "unit-tests"]
+  "phase": 8,
+  "features": ["chain-socks5-http", "warp-wireguard-conf", "singbox-sub"]
 }
