@@ -1,6 +1,5 @@
 {
   "name": "UltraPlus-Free",
   "version": "5.1.0",
-  "phase": "182-201",
-  "worker_bytes": 81947
+  "note": "Full worker.js must be complete minified single file"
 }
