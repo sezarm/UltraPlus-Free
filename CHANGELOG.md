@@ -1,10 +1,12 @@
 # Changelog
 
-## v4.5.0
+## v5.0.0
 
-- **SOCKS5 chain** (Worker outbound via chain host)
-- **Warp in subscription** (Clash Meta + Sing-box) when private key set
-- Stronger **Sing-box routing** (direct LAN/IR, block ads)
+- Chain: **SOCKS5 + HTTP CONNECT**
+- Heavier Clash reject rules (ads + adult keywords)
+- `/ip` + `/tools/latency` diagnostics
+- Richer `/wizard` guide
+- Keeps: Trojan, DoH, Warp-in-sub, multi-user, APIs
 
-## v4.0.0
-- Trojan, DoH, Clash routing, proxy IP
+## v4.5 / v4.0
+- SOCKS5 chain, Warp sub, Trojan, DoH, routing

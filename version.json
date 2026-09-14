@@ -1,5 +1,6 @@
 {
   "name": "UltraPlus-Free",
-  "version": "4.5.0",
-  "phase": "142-161"
+  "version": "5.0.0",
+  "phase": "162-181",
+  "goal": "multi-user panel + protocols beyond basic BPB feature set"
 }
