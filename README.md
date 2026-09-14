@@ -1,27 +1,26 @@
 # UltraPlus-Free
 
-Self-hosted **Cloudflare Workers** management platform — modular, secure, Persian-first.
+Self-hosted Cloudflare Workers panel — modular, secure, Persian-first.
 
-> Phase **1.0.0-phase1**: architecture, setup wizard, auth, health, dashboard shell.
+**Current: Phase 2 (`1.1.0-phase2`)**
 
-## Not a clone
-Original modular design. No proprietary code from other panels.
+## Features now
+- First-run setup wizard (locks after admin)
+- PBKDF2 auth + KV sessions
+- User management (UI + API)
+- Private `/sub/:token` (base64 / raw / clash)
+- D1 + KV
 
-## Stack
-Workers · D1 · KV · Vanilla UI · Wrangler
-
-## Quick start
+## Deploy
 See [docs/INSTALL.md](./docs/INSTALL.md)
 
 ```bash
 npm i
-# set KV + D1 ids in wrangler.jsonc
+# configure wrangler.jsonc KV + D1 ids
 npm run deploy
 ```
 
-Open `/setup` once, then `/admin`.
-
-Also see [README.fa.md](./README.fa.md) · [Architecture](./docs/ARCHITECTURE.md)
+Open `/setup` → `/admin` → Users.
 
 ## License
 MIT
