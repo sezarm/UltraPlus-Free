@@ -1,15 +1,10 @@
 # Changelog
 
-## v2.0.0 (Phases 49–68)
+## v2.1.0 (Phases 69–71)
 
-- Batch add users
-- Edit user (name / expire / traffic)
-- Ban UUID list
-- Admin IP allowlist
-- Sub rate limit per IP
-- `?format=xray` JSON
-- Footer + more settings
-- Minified single-file CF deploy
+- **New UUID** button (old sub links stop working)
+- **Remaining days** shown on expire column
+- Users sorted: enabled first, then name
 
-## v1.0.0
-- First production pack
+## v2.0.0
+- Batch add, edit, ban list, admin IP, sub rate, xray format
