@@ -1,3 +1,4 @@
+/** Application constants */
 export const APP_NAME = "UltraPlus-Free";
 export const APP_VERSION = "1.1.0-phase2";
 export const PATHS = { HEALTH: "/healthz", SETUP: "/setup", ADMIN: "/admin", API: "/api", SUB: "/sub", LOGIN: "/login", LOGOUT: "/logout" };

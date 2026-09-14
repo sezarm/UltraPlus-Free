@@ -2,25 +2,23 @@
 
 Self-hosted Cloudflare Workers panel — modular, secure, Persian-first.
 
-**Current: Phase 2 (`1.1.0-phase2`)**
+**Version:** `1.1.0-phase2`
 
-## Features now
-- First-run setup wizard (locks after admin)
-- PBKDF2 auth + KV sessions
-- User management (UI + API)
-- Private `/sub/:token` (base64 / raw / clash)
-- D1 + KV
+## Phase 2 features
+- First-run `/setup` (locks after admin)
+- PBKDF2 login + KV sessions
+- Users: create / disable / delete / regenerate token
+- Private subscription: `/sub/<token>?format=base64|raw|clash`
+- API: `/api/users`, `/api/stats`, `/api/health`
+- Mobile hamburger UI
 
 ## Deploy
 See [docs/INSTALL.md](./docs/INSTALL.md)
 
-```bash
-npm i
-# configure wrangler.jsonc KV + D1 ids
-npm run deploy
-```
-
-Open `/setup` → `/admin` → Users.
+1. Bind **KV** as `ULTRA_KV` and **D1** as `DB`
+2. Apply migrations
+3. `npm run deploy`
+4. Open `/setup`
 
 ## License
 MIT

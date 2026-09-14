@@ -1,14 +1,13 @@
 # Roadmap
 
-## Phase 1 ✅
-Modular tree, setup, auth, health
+## Phase 1 ✓
+Architecture, setup lock, auth, migrations, health
 
-## Phase 2 ✅
-Users CRUD · API · /sub/:token · Users UI
+## Phase 2 ✓ (current)
+Users CRUD · API · private sub tokens · users UI · stats
 
 ## Phase 3 (next)
-Protocol core VLESS/Trojan WebSocket
-Host pool · more subscription formats
+Protocol engine: VLESS + Trojan over WebSocket + real multi-host configs
 
 ## Phase 4+
-Telegram · Backup · Diagnostics · PWA
+Network/hosts · Telegram · Backup · Diagnostics · CI release

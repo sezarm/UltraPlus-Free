@@ -1,6 +1,8 @@
 export function newId() {
   return crypto.randomUUID();
 }
+
+/** Cryptographically strong token for private subscription URLs */
 export function newSubToken() {
   const bytes = crypto.getRandomValues(new Uint8Array(24));
   let s = "";
