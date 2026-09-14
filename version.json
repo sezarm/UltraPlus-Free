@@ -1,6 +1,5 @@
 {
-  "name": "UltraPlus-Free",
-  "version": "6.1.0",
-  "worker_bytes": 27173,
-  "status": "published on GitHub"
+  "version": "7.0.0",
+  "style": "BPB-like multi-config on CF IPs",
+  "owner_sub": "/sub"
 }
