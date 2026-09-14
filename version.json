@@ -2,5 +2,6 @@
   "version": "1.1.0-phase2",
   "channel": "stable",
   "phase": 2,
-  "name": "UltraPlus-Free"
+  "name": "UltraPlus-Free",
+  "features": ["users-crud", "sub-token", "api-users", "kv-fallback"]
 }

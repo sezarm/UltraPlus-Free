@@ -1,13 +1,19 @@
 # Roadmap
 
 ## Phase 1 ✓
-Architecture, setup lock, auth, migrations, health
+Modular tree, setup lock, auth, health
 
 ## Phase 2 ✓ (current)
-Users CRUD · API · private sub tokens · users UI · stats
+Users CRUD, sub tokens, API, Users UI
 
-## Phase 3 (next)
-Protocol engine: VLESS + Trojan over WebSocket + real multi-host configs
+## Phase 3
+Protocol core VLESS/Trojan WebSocket + multi-config hosts
 
-## Phase 4+
-Network/hosts · Telegram · Backup · Diagnostics · CI release
+## Phase 4
+Network / routing / host pool
+
+## Phase 5
+Telegram bot
+
+## Phase 6
+Backup + diagnostics

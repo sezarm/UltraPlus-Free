@@ -3,7 +3,6 @@ export function now() {
 }
 
 export function daysFromNow(days) {
-  if (!days || days <= 0) return null;
   return Date.now() + days * 86400000;
 }
 

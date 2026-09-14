@@ -8,7 +8,7 @@ export function formatRaw(lines) {
   return lines.join("\n");
 }
 
-/** Placeholder VLESS line — full protocol multi-host in Phase 3 */
+/** Placeholder VLESS line for worker host — full protocol engine in later phase */
 export function buildPlaceholderLinks(user, host, path = "/") {
   const uuid = user.uuid;
   const name = encodeURIComponent(user.displayName || "user");
