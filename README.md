@@ -1,17 +1,18 @@
-# UltraPlus-Free v3.0.0
+# UltraPlus-Free v4.0.0
 
-Cloudflare Worker panel – **one file**, free, no VPS.
+Cloudflare Worker panel – single file – free.
 
 ## Deploy
 
-1. Open **worker.js** → copy all
-2. Cloudflare Workers → paste → Deploy
-3. Optional KV: `ULTRA_KV`
-4. Vars: `ADMIN_PASSWORD`, `SUB_TOKEN`, Telegram…
-5. Visit `/admin` (default `admin`)
+1. Copy `worker.js` → Cloudflare Workers → Deploy
+2. Optional KV binding: `ULTRA_KV`
+3. Optional: `ADMIN_PASSWORD`, `SUB_TOKEN`, Telegram vars
+4. Open `/admin` (default password `admin`)
 
-## Highlights
+## Protocols
 
-VLESS/WS · multi-lang · batch users · ban list · admin IP · xray/clash/singbox · APIs · maintenance · Telegram
+- VLESS + Trojan (WS+TLS)
+- Subscription: base64 / raw / clash / singbox / xray
+- DoH: `https://YOUR_WORKER/dns-query`
 
-MIT – each user hosts their own Worker.
+MIT
