@@ -1,10 +1,13 @@
-# اولتراپلاس رایگان (UltraPlus-Free)
+# اولتراپلاس رایگان v1.7.0
 
-پلتفرم **خودمیزبان** روی Cloudflare Workers — ماژولار، امن، فارسی‌محور.
+پنل خودمیزبان روی Cloudflare Workers — فاز ۱ تا ۷ کامل.
 
-## فاز ۱
-ویزارد نصب، ورود امن، health، اسکلت داشبورد، معماری پوشه‌ای.
+## قابلیت‌ها
+ویزارد نصب · کاربران · VLESS/Trojan · Host Pool · ربات تلگرام · بک‌آپ · تشخیص · PWA
 
-نصب: [docs/INSTALL.md](./docs/INSTALL.md)
+## نصب
+KV + D1 · migrations · deploy · `/setup`
+
+وب‌هوک تلگرام: `/telegram/webhook`
 
 MIT

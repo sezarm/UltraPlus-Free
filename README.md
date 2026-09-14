@@ -1,24 +1,30 @@
 # UltraPlus-Free
 
-Self-hosted Cloudflare Workers panel — modular, secure, Persian-first.
+Self-hosted Cloudflare Workers panel — **v1.7.0** (phases 1–7 complete).
 
-**Version:** `1.1.0-phase2`
+## Features
+- Setup wizard + secure auth (PBKDF2)
+- Multi-user + private `/sub/:token`
+- VLESS / Trojan over WebSocket
+- Host pool + routing profiles + DoH
+- Telegram admin bot
+- Backup export/import
+- Diagnostics + PWA shell
+- Unit tests + CI
 
-## Phase 2 features
-- First-run `/setup` (locks after admin)
-- PBKDF2 login + KV sessions
-- Users: create / disable / delete / regenerate token
-- Private subscription: `/sub/<token>?format=base64|raw|clash`
-- API: `/api/users`, `/api/stats`, `/api/health`
-- Mobile hamburger UI
-
-## Deploy
-See [docs/INSTALL.md](./docs/INSTALL.md)
-
-1. Bind **KV** as `ULTRA_KV` and **D1** as `DB`
+## Quick start
+1. Bind **KV** `ULTRA_KV` and **D1** `DB`
 2. Apply migrations
-3. `npm run deploy`
+3. `npm i && npm run deploy`
 4. Open `/setup`
 
-## License
+Optional secrets: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_ADMIN_IDS`
+
+Webhook: `https://YOUR_WORKER/telegram/webhook`
+
+## Docs
+- [INSTALL](./docs/INSTALL.md)
+- [Persian](./README.fa.md)
+- [Roadmap](./ROADMAP.md)
+
 MIT
