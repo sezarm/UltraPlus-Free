@@ -1,6 +1,5 @@
-/** Application constants */
 export const APP_NAME = "UltraPlus-Free";
-export const APP_VERSION = "1.0.0-phase1";
+export const APP_VERSION = "1.1.0-phase2";
 export const PATHS = { HEALTH: "/healthz", SETUP: "/setup", ADMIN: "/admin", API: "/api", SUB: "/sub", LOGIN: "/login", LOGOUT: "/logout" };
 export const SESSION_COOKIE = "up_session";
 export const SESSION_TTL_SEC = 86400;
