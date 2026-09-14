@@ -1,23 +1,21 @@
 # Changelog
 
-## 1.3.0-phase3-4 — 2026-09-14
+## 1.7.0 — 2026-09-14
+### Phase 5 Telegram
+- Webhook `/telegram/webhook`
+- Commands: start, status, users, adduser, enable, disable, delete, stats
+- Admin IDs only
 
-### Phase 3 — Protocols
-- VLESS over WebSocket (`cloudflare:sockets`)
-- Trojan over WebSocket (SHA224 auth)
-- Path validation, concurrent limit per UUID
-- Proxy stats on dashboard
+### Phase 6 Backup / Diagnostics / PWA
+- Export/import JSON backup
+- Diagnostics page + `/api/diagnostics`
+- manifest + service worker
+- Audit log
 
-### Phase 4 — Network
-- Host pool with seed CF addresses
-- Priority / random / roundrobin selection
-- Routing profiles: Default, Privacy, Performance
-- DoH endpoint `/dns-query`
-- Multi-config subscription (VLESS+Trojan × hosts)
-- Admin Network page
+### Phase 7 Quality
+- Unit tests (ids, backup)
+- CI verify + tests
 
-## 1.1.0-phase2
-Users CRUD, sub tokens, API
-
-## 1.0.0-phase1
-Modular core, setup, auth
+## 1.3.0 Protocols + Network
+## 1.1.0 Users
+## 1.0.0 Core

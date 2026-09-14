@@ -4,12 +4,12 @@ import { join } from "path";
 const root = process.cwd();
 const required = [
   "src/index.js",
-  "src/core/app.js",
-  "src/users/user-service.js",
-  "src/subscriptions/subscription-service.js",
-  "src/admin/dashboard.js",
-  "migrations/0001_initial.sql",
-  "wrangler.jsonc",
+  "src/telegram/webhook.js",
+  "src/telegram/commands.js",
+  "src/storage/backup.js",
+  "src/admin/diagnostics.js",
+  "src/protocols/session.js",
+  "src/network/hosts.js",
   "VERSION",
 ];
 let ok = true;

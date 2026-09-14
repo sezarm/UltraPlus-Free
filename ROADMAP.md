@@ -1,9 +1,8 @@
 # Roadmap
 
-## Phase 1 ✓ — Architecture + setup + auth
-## Phase 2 ✓ — Users + sub tokens + API
-## Phase 3 ✓ — VLESS/Trojan WebSocket proxy
-## Phase 4 ✓ — Host pool + routing + DoH
+## Completed 1–7
+1 Architecture · 2 Users · 3 Protocols · 4 Network
+5 Telegram · 6 Backup/Diagnostics/PWA · 7 Tests/Audit
 
-## Phase 5 — Telegram bot
-## Phase 6 — Backup + diagnostics + PWA
+## Future v2
+Chain / Warp · Plugins · Multi-instance
