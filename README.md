@@ -1,20 +1,57 @@
-# UltraPlus-Free v6.0.0 FINAL
+# UltraPlus-Free v6.1.0
 
-پنل رایگان Cloudflare Worker — چندکاربره کامل.
+پنل رایگان روی **Cloudflare Worker** — چندکاربره، VLESS + Trojan.
 
-## نصب با گوشی (بدون ترمینال)
+## نصب سریع (گوشی / کامپیوتر — بدون ترمینال)
 
-**[INSTALL-FA.md](./INSTALL-FA.md)** · [English](./INSTALL-EN.md) · [FEATURES](./FEATURES.md)
+### ۱) فایل Worker
 
-1. فایل **`worker.js` کامل** (~85KB) را بردار  
-2. Cloudflare → Create Worker → Paste → Deploy  
-3. KV Binding نام متغیر: **`ULTRA_KV`**  
-4. Secret: **`ADMIN_PASSWORD`** → `/admin`
+از همین مخزن فایل **[worker.js](./worker.js)** را باز کن → **Raw** یا Download  
+(حجم حدود **۲۷KB** — اگر چند خط بود، صفحه را Refresh کن)
 
-اگر `worker.js` روی گیت‌هاب چند خط بود: **Upload file** فایل کامل را جایگزین کن.
+### ۲) کلودفلر
+
+1. [dash.cloudflare.com](https://dash.cloudflare.com) → **Workers & Pages**
+2. **Create Worker** → اسم بگذار → Deploy
+3. **Edit code** → همه را پاک کن → **کل** `worker.js` را Paste کن
+4. **Save and Deploy**
+
+### ۳) KV (مهم)
+
+1. **KV** → Create namespace
+2. Worker → **Settings → Bindings → KV**
+3. Variable name دقیقاً: **`ULTRA_KV`**
+4. Save
+
+### ۴) رمز
+
+**Variables** → `ADMIN_PASSWORD` = رمز خودت  
+(اگر خالی باشد پیش‌فرض: `admin`)
+
+### ۵) ورود
+
+`https://WORKER-تو.workers.dev/admin`
+
+آموزش کامل: [INSTALL-FA.md](./INSTALL-FA.md)
+
+---
 
 ## قابلیت‌ها
 
-VLESS + Trojan · چند کاربر · انقضا · ساب clash/singbox/xray · DoH · Chain · Warp-in-sub · بک‌آپ KV با TTL · تلگرام
+- پنل چندزبانه EN/FA/ZH
+- چند کاربر + انقضا + لینک ساب جدا
+- VLESS و Trojan روی WebSocket
+- ساب base64 / raw / clash
+- DoH: `/dns-query`
+- KV برای ماندن داده
 
-MIT
+## بعد از Deploy
+
+| مسیر | کار |
+|------|-----|
+| `/admin` | پنل |
+| `/sub/<uuid>` | اشتراک |
+| `/wizard` | راهنما |
+| `/health` | وضعیت |
+
+MIT — هر نفر Worker خودش را رایگان می‌سازد.

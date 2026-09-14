@@ -1,6 +1,6 @@
 {
   "name": "UltraPlus-Free",
-  "version": "6.0.0",
-  "status": "FINAL",
-  "note": "Upload full worker.js (~85KB) via GitHub UI if placeholder shown"
+  "version": "6.1.0",
+  "worker_bytes": 27173,
+  "status": "published on GitHub"
 }
