@@ -1,15 +1,14 @@
 # Changelog
 
-## v5.2.0 (stable repair)
+## v6.0.0 FINAL
 
-- Fix CF **colo** display bug on dashboard (variable shadowing)
-- Link to `/ip` on dashboard
-- Extra security header Permissions-Policy
-- Health JSON lists protocols + doh
-- Version badge on login
+- KV: persistent IP bans with **TTL**
+- KV: automatic daily user backup (`backup:users:YYYY-MM-DD`) with **30-day TTL**
+- `/admin/backups` list backup keys
+- All previous features retained (VLESS, Trojan, DoH, chain, multi-user, …)
 
-## v5.1.0
-- Full backup JSON, remark display
+## v5.2.0
+- Colo fix, headers, stable
 
-## v5.0.0
-- HTTP/SOCKS5 chain, heavy routing, tools, wizard
+## Install
+See INSTALL-FA.md (mobile, no terminal)

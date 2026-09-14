@@ -1,42 +1,20 @@
-# UltraPlus-Free v5.2.0
+# UltraPlus-Free v6.0.0 FINAL
 
-پنل رایگان Cloudflare Worker — چندکاربره، VLESS + Trojan، بدون VPS.
+پنل رایگان Cloudflare Worker — چندکاربره کامل.
 
-**نصب با گوشی (بدون ترمینال):** [INSTALL-FA.md](./INSTALL-FA.md) · [English](./INSTALL-EN.md)
+## نصب با گوشی (بدون ترمینال)
 
-**لیست قابلیت‌ها:** [FEATURES.md](./FEATURES.md)
+**[INSTALL-FA.md](./INSTALL-FA.md)** · [English](./INSTALL-EN.md) · [FEATURES](./FEATURES.md)
 
----
+1. فایل **`worker.js` کامل** (~85KB) را بردار  
+2. Cloudflare → Create Worker → Paste → Deploy  
+3. KV Binding نام متغیر: **`ULTRA_KV`**  
+4. Secret: **`ADMIN_PASSWORD`** → `/admin`
 
-## فایل اصلی
+اگر `worker.js` روی گیت‌هاب چند خط بود: **Upload file** فایل کامل را جایگزین کن.
 
-| فایل | توضیح |
-|------|--------|
-| **`worker.js`** | کل پنل + پروکسی (یک فایل) → در Cloudflare Paste کن |
-| `INSTALL-FA.md` | آموزش کامل فارسی با مراحل لمسی |
-| `INSTALL-EN.md` | English install |
-| `FEATURES.md` | چک‌لیست عملکردها |
-| `LICENSE` | MIT |
+## قابلیت‌ها
 
-اگر `worker.js` روی گیت‌هاب خیلی کوچک بود، فایل کامل را از بخش Releases یا فایل پیوست پروژه بگیر (باید حدود ۸۰KB باشد).
+VLESS + Trojan · چند کاربر · انقضا · ساب clash/singbox/xray · DoH · Chain · Warp-in-sub · بک‌آپ KV با TTL · تلگرام
 
----
-
-## خلاصه نصب (۳ قدم — فقط مرورگر)
-
-1. Cloudflare → Create Worker → Paste **کل** `worker.js` → Deploy  
-2. KV Binding با نام متغیر **`ULTRA_KV`**  
-3. Secret: **`ADMIN_PASSWORD`** → برو `/admin`
-
-جزئیات: **[INSTALL-FA.md](./INSTALL-FA.md)**
-
----
-
-## بعد از نصب
-
-- پنل: `/admin`
-- ساب هر کاربر: `/sub/<uuid>`
-- DoH: `/dns-query`
-- وضعیت: `/status` · IP: `/ip`
-
-MIT — هر نفر Worker خودش را می‌سازد.
+MIT

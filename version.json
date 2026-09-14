@@ -1,7 +1,6 @@
 {
   "name": "UltraPlus-Free",
-  "version": "5.2.0",
-  "phase": "202-211",
-  "status": "stable",
-  "install": "INSTALL-FA.md"
+  "version": "6.0.0",
+  "status": "FINAL",
+  "note": "Upload full worker.js (~85KB) via GitHub UI if placeholder shown"
 }
