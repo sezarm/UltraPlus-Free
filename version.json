@@ -1,6 +1,6 @@
 {
   "name": "UltraPlus-Free",
-  "version": "0.16.0",
-  "phase": "33-35",
-  "deploy": "worker.js single file – no Python on Cloudflare"
+  "version": "0.17.0",
+  "phase": "36-38",
+  "deploy": "worker.js"
 }
