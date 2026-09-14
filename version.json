@@ -1,5 +1,5 @@
 {
-  "version": "1.11.0",
+  "version": "1.12.0",
   "channel": "stable",
-  "notes": "CSRF module, IP radar, plugin registry, /ip and latency tools; Wizard CLI deferred"
+  "notes": "Prompt-complete server edition: guard, integrity, docs, install helpers; Wizard CLI excluded"
 }

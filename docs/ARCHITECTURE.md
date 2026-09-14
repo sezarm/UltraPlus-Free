@@ -1,7 +1,7 @@
 # Architecture
 
-Request → security headers → rate limit → router → handler → D1/KV → response.
+Request → headers → (WS proxy | router) → D1/KV → response
 
-Entry `src/index.js` is thin. Modules under `src/core`, `src/auth`, `src/database`, `src/storage`, `src/admin`.
+Modules: core, auth, users, protocols, network, subscriptions, telegram, storage, admin, security.
 
-Stack: Workers + D1 + KV.
+Deferred: Wizard CLI OAuth installer.

@@ -1,13 +1,9 @@
-# اولتراپلاس رایگان v1.7.0
+# اولتراپلاس رایگان v1.12.0
 
-پنل خودمیزبان روی Cloudflare Workers — فاز ۱ تا ۷ کامل.
+پنل روی Cloudflare Workers — نسخه سرور کامل.
 
-## قابلیت‌ها
-ویزارد نصب · کاربران · VLESS/Trojan · Host Pool · ربات تلگرام · بک‌آپ · تشخیص · PWA
+**ندارد:** ویزارد CLI نصب خودکار اکانت.
 
-## نصب
-KV + D1 · migrations · deploy · `/setup`
-
-وب‌هوک تلگرام: `/telegram/webhook`
+نصب: KV + D1 · deploy · `/setup`
 
 MIT

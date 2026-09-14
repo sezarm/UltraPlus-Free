@@ -1,30 +1,16 @@
 # UltraPlus-Free
 
-Self-hosted Cloudflare Workers panel — **v1.7.0** (phases 1–7 complete).
+Self-hosted Cloudflare Workers panel — **v1.12.0** (server edition).
 
-## Features
-- Setup wizard + secure auth (PBKDF2)
-- Multi-user + private `/sub/:token`
-- VLESS / Trojan over WebSocket
-- Host pool + routing profiles + DoH
-- Telegram admin bot
-- Backup export/import
-- Diagnostics + PWA shell
-- Unit tests + CI
+Users · VLESS/Trojan · Host pool · Health/Radar · Chain · WARP · Telegram · Backup · Guard
 
-## Quick start
-1. Bind **KV** `ULTRA_KV` and **D1** `DB`
-2. Apply migrations
-3. `npm i && npm run deploy`
-4. Open `/setup`
+**Not included:** Wizard CLI (deferred).
 
-Optional secrets: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_ADMIN_IDS`
+```bash
+npm i
+# wrangler.jsonc → KV + D1 ids
+npx wrangler d1 migrations apply ultraplus-db
+npm run deploy
+```
 
-Webhook: `https://YOUR_WORKER/telegram/webhook`
-
-## Docs
-- [INSTALL](./docs/INSTALL.md)
-- [Persian](./README.fa.md)
-- [Roadmap](./ROADMAP.md)
-
-MIT
+MIT · [docs/API.md](docs/API.md)
