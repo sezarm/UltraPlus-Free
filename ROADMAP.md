@@ -1,15 +1,12 @@
-# Roadmap (aligned with original architecture prompts)
+# Roadmap
 
-## Done through 1.10.0
-Modular Worker · D1/KV · Setup wizard · Auth · Users · Sub tokens
-VLESS/Trojan · Host pool · Routing · DoH · Chain · WARP
-Telegram · Backup · Diagnostics · PWA · Tests
-Quota/expiry · Host health · Multi-admin · Rate limits
-Device limit · Resistance presets · Sub mirrors · Update check
+## Done 1.11.0 (Worker/server)
+Panel · Users · Protocols · Network · Telegram · Backup · Radar · Plugins stub
 
-## Still open from prompts (later)
-- Full CSRF tokens on forms
-- Plugin interface
-- IP radar auto-refresh lists
-- Wizard CLI (Go) external installer
-- Reproducible single-file release artifact pipeline
+## Deferred
+- Wizard CLI (paused)
+- Full CSRF on every form (module ready)
+
+## Optional later
+- Finer traffic metering
+- Single-file release build

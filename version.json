@@ -1,5 +1,5 @@
 {
-  "version": "1.10.0",
+  "version": "1.11.0",
   "channel": "stable",
-  "notes": "device limit, resistance policies, sub mirrors, update check"
+  "notes": "CSRF module, IP radar, plugin registry, /ip and latency tools; Wizard CLI deferred"
 }
