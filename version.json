@@ -1,5 +1,5 @@
 {
-  "version": "1.9.0",
+  "version": "1.10.0",
   "channel": "stable",
-  "notes": "phases 9-12: quota enforce, host health, multi-admin, sub rate limit"
+  "notes": "device limit, resistance policies, sub mirrors, update check"
 }

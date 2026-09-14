@@ -4,6 +4,8 @@ import { NotFoundError, AuthorizationError } from "../core/errors.js";
 import { getNetworkSettings } from "../network/settings.js";
 import { getEnabledHosts, selectHosts } from "../network/hosts.js";
 import { getRoutingProfile } from "../network/routing.js";
+import { getResistancePolicy } from "../network/resistance.js";
+import { getMirrorSettings, subscriptionHeaders } from "./failover.js";
 
 export async function resolveSubscription(env, token, host, format) {
   const user = await getUserByToken(env, token);
@@ -15,5 +17,12 @@ export async function resolveSubscription(env, token, host, format) {
   const selected = selectHosts(hosts, st.selection || "priority", 60);
   const servers = selected.map((h) => h.address);
   const profile = await getRoutingProfile(env);
-  return formatSubscription(user, host, format, st, servers, profile.rules);
+  const resistance = await getResistancePolicy(env);
+  const rules = resistance.id !== "off" ? resistance.clashRules : profile.rules;
+  if (resistance.fragment) st.fragment = true;
+  const result = formatSubscription(user, host, format, st, servers, rules);
+  const mirrors = await getMirrorSettings(env);
+  result.headers = subscriptionHeaders(mirrors, result.contentType, result.count);
+  result.mirrors = mirrors;
+  return result;
 }

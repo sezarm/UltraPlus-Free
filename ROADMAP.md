@@ -1,13 +1,15 @@
-# Roadmap
+# Roadmap (aligned with original architecture prompts)
 
-## Done (through 1.9.0)
-1–8 product core
-9 Quota/expiry on proxy
-10 Host health scan
-11 Multi-admin
-12 Sub rate limit
+## Done through 1.10.0
+Modular Worker · D1/KV · Setup wizard · Auth · Users · Sub tokens
+VLESS/Trojan · Host pool · Routing · DoH · Chain · WARP
+Telegram · Backup · Diagnostics · PWA · Tests
+Quota/expiry · Host health · Multi-admin · Rate limits
+Device limit · Resistance presets · Sub mirrors · Update check
 
-## Later
-- Finer traffic metering
-- IP radar lists
-- Roles beyond admin
+## Still open from prompts (later)
+- Full CSRF tokens on forms
+- Plugin interface
+- IP radar auto-refresh lists
+- Wizard CLI (Go) external installer
+- Reproducible single-file release artifact pipeline
