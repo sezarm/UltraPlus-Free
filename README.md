@@ -1,25 +1,17 @@
-# UltraPlus-Free v2.0.0
+# UltraPlus-Free v3.0.0
 
-Free **Cloudflare Worker** panel – VLESS/WS – no VPS, no Python.
+Cloudflare Worker panel – **one file**, free, no VPS.
 
 ## Deploy
 
-1. Download / open **`worker.js`**
-2. Cloudflare → Workers → Create → **Paste all** → Deploy
-3. Optional: KV binding name **`ULTRA_KV`**
-4. Optional vars: `ADMIN_PASSWORD`, `SUB_TOKEN`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_ADMIN_ID`
-5. Open `https://YOUR_WORKER/admin` (default password: `admin`)
+1. Open **worker.js** → copy all
+2. Cloudflare Workers → paste → Deploy
+3. Optional KV: `ULTRA_KV`
+4. Vars: `ADMIN_PASSWORD`, `SUB_TOKEN`, Telegram…
+5. Visit `/admin` (default `admin`)
 
-## Features (v2)
+## Highlights
 
-- Multi-lang panel (EN/FA/ZH)
-- Users: add, batch add, edit, dup, enable/disable all, remove expired, search
-- Sub: base64, raw, clash, sing-box, **xray**
-- Extra hosts, fragment, maintenance, ban UUID list
-- Admin IP allowlist, sub rate limit
-- Telegram bot, `/status`, `/client/<uuid>`
-- VLESS over WebSocket core
+VLESS/WS · multi-lang · batch users · ban list · admin IP · xray/clash/singbox · APIs · maintenance · Telegram
 
-## License
-
-MIT – each person hosts their own Worker for free.
+MIT – each user hosts their own Worker.

@@ -1,10 +1,15 @@
 # Changelog
 
-## v2.1.0 (Phases 69–71)
+## v3.0.0 (Phases 72–101, 10x pack)
 
-- **New UUID** button (old sub links stop working)
-- **Remaining days** shown on expire column
-- Users sorted: enabled first, then name
+- `/admin/api/users` + `/admin/api/stats` JSON
+- Reset **all** UUIDs · Set all traffic GB
+- Login brute-force lock (IP)
+- Full UUID shown in table
+- Clash DIRECT rules for LAN/private IPs
+- Welcome note + custom CSS fields
+- Telegram `/broadcast`
+- Keeps all v2 features (batch, ban, admin IP, xray, …)
 
-## v2.0.0
-- Batch add, edit, ban list, admin IP, sub rate, xray format
+## v2.1.0
+- New UUID, remain days, sort

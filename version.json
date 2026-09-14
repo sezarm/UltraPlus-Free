@@ -1,6 +1,6 @@
 {
   "name": "UltraPlus-Free",
-  "version": "2.1.0",
-  "phase": "69-71",
+  "version": "3.0.0",
+  "phase": "72-101",
   "deploy": "worker.js"
 }
