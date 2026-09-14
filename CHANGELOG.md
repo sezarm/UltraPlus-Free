@@ -1,12 +1,7 @@
 # Changelog
 
-## v0.17.0 (Phases 36–38)
+## v1.0.0 (Phases 39–48 pack)
 
-- **Panel password** can be set in Settings (KV) – overrides `ADMIN_PASSWORD`
-- **Dup** user button
-- **Test Telegram** button in Settings
-- **Custom maintenance message**
-- Still single `worker.js` – no Python
-
-## v0.16.0
-- SUB_TOKEN, dashboard host links
+- Production **minified** `worker.js` for Cloudflare paste-deploy
+- Full panel: users, sub formats, VLESS/WS, maintenance, Telegram, SUB_TOKEN, etc.
+- No Python / no VPS required

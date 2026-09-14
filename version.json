@@ -1,6 +1,7 @@
 {
   "name": "UltraPlus-Free",
-  "version": "0.17.0",
-  "phase": "36-38",
-  "deploy": "worker.js"
+  "version": "1.0.0",
+  "phase": "39-48",
+  "deploy": "worker.js",
+  "platform": "cloudflare-workers-only"
 }
