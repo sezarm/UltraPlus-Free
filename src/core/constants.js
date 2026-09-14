@@ -1,0 +1,11 @@
+/** Application constants */
+export const APP_NAME = "UltraPlus-Free";
+export const APP_VERSION = "1.0.0-phase1";
+export const PATHS = { HEALTH: "/healthz", SETUP: "/setup", ADMIN: "/admin", API: "/api", SUB: "/sub", LOGIN: "/login", LOGOUT: "/logout" };
+export const SESSION_COOKIE = "up_session";
+export const SESSION_TTL_SEC = 86400;
+export const LOGIN_RATE_MAX = 8;
+export const LOGIN_RATE_WINDOW_MS = 15 * 60 * 1000;
+export const DEFAULT_LANG = "fa";
+export const SUPPORTED_LANGS = ["fa", "en"];
+export const KV_KEYS = { SETTINGS: "settings", SETUP_DONE: "setup_done", SESSION_PREFIX: "session:", RATE_PREFIX: "rate:" };
