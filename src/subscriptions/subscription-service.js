@@ -1,11 +1,12 @@
 import { getUserByToken } from "../users/user-service.js";
-import { formatSubscription } from "./formatter.js";
+import { formatSubscription, buildUserinfo } from "./formatter.js";
 import { NotFoundError, AuthorizationError } from "../core/errors.js";
 import { getNetworkSettings } from "../network/settings.js";
 import { getEnabledHosts, selectHostsAsync } from "../network/hosts.js";
 import { getRoutingProfile } from "../network/routing.js";
 import { getResistancePolicy } from "../network/resistance.js";
 import { getMirrorSettings, subscriptionHeaders } from "./failover.js";
+import { renderUserPortal, isBrowserRequest } from "./user-portal.js";
 
 export async function resolveSubscription(env, token, host, format) {
   const user = await getUserByToken(env, token);
@@ -20,9 +21,16 @@ export async function resolveSubscription(env, token, host, format) {
   const resistance = await getResistancePolicy(env);
   const rules = resistance.id !== "off" ? resistance.clashRules : profile.rules;
   if (resistance.fragment) st.fragment = true;
+  if (st.enableTrojan === undefined) st.enableTrojan = true;
   const result = formatSubscription(user, host, format, st, servers, rules);
   const mirrors = await getMirrorSettings(env);
   result.headers = subscriptionHeaders(mirrors, result.contentType, result.count);
+  result.headers["Subscription-Userinfo"] = buildUserinfo(user);
+  result.headers["Profile-Update-Interval"] = "6";
   result.mirrors = mirrors;
+  result.user = user;
+  result.links = result.links || [];
   return result;
 }
+
+export { isBrowserRequest, renderUserPortal };

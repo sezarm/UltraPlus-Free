@@ -1,5 +1,5 @@
 {
-  "version": "1.13.0",
+  "version": "1.14.0",
   "channel": "stable",
-  "notes": "Hardened VLESS/Trojan TCP tunnel: bidirectional pump, connect ready, path normalize, UDP reject"
+  "notes": "End-user portal, multi-format sub, userinfo headers, richer Clash/Sing-box/Surge"
 }
