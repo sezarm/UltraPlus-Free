@@ -1,9 +1,19 @@
-# اولتراپلاس رایگان v1.12.0
+# اولتراپلاس رایگان (UltraPlus-Free)
 
-پنل روی Cloudflare Workers — نسخه سرور کامل.
+پنل خودمیزبان روی Cloudflare Workers — نسخه سرور ۱.۱۲+
 
-**ندارد:** ویزارد CLI نصب خودکار اکانت.
+## اگر Wrangler بلد نیستی یا با گوشی آمدی
 
-نصب: KV + D1 · deploy · `/setup`
+👉 **راهنمای ساده:** [docs/INSTALL-SIMPLE.fa.md](./docs/INSTALL-SIMPLE.fa.md)
+
+1. داشبورد Cloudflare + فورک گیت‌هاب (بدون ترمینال)
+2. یک‌بار کمک از کسی که لپ‌تاپ دارد
+3. Wrangler (اختیاری)
+
+## بعد از نصب فقط با گوشی
+
+`/login` → کاربر بساز → لینک `/sub/TOKEN` را در کلاینت وارد کن
+
+https://github.com/sezarm/UltraPlus-Free
 
 MIT
