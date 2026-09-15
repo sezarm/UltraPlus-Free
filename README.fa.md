@@ -1,19 +1,20 @@
-# اولتراپلاس رایگان (UltraPlus-Free)
+# اولتراپلاس رایگان v1.13.0
 
-پنل خودمیزبان روی Cloudflare Workers — نسخه سرور ۱.۱۲+
+پنل Cloudflare Workers — تونل VLESS/Trojan تقویت‌شده.
 
-## اگر Wrangler بلد نیستی یا با گوشی آمدی
+## نصب ساده (موبایل / بدون Wrangler)
+[docs/INSTALL-SIMPLE.fa.md](./docs/INSTALL-SIMPLE.fa.md)
 
-👉 **راهنمای ساده:** [docs/INSTALL-SIMPLE.fa.md](./docs/INSTALL-SIMPLE.fa.md)
+## تست سایت خارجی بعد از آپدیت تونل
+[docs/TUNNEL-TEST.fa.md](./docs/TUNNEL-TEST.fa.md)
 
-1. داشبورد Cloudflare + فورک گیت‌هاب (بدون ترمینال)
-2. یک‌بار کمک از کسی که لپ‌تاپ دارد
-3. Wrangler (اختیاری)
+```bash
+npm i
+# KV + D1 در wrangler.jsonc
+npx wrangler d1 migrations apply ultraplus-db --remote
+npm run deploy
+```
 
-## بعد از نصب فقط با گوشی
+سپس `/setup`
 
-`/login` → کاربر بساز → لینک `/sub/TOKEN` را در کلاینت وارد کن
-
-https://github.com/sezarm/UltraPlus-Free
-
-MIT
+MIT · https://github.com/sezarm/UltraPlus-Free
