@@ -1,5 +1,5 @@
 {
-  "version": "1.12.0",
+  "version": "1.13.0",
   "channel": "stable",
-  "notes": "Prompt-complete server edition: guard, integrity, docs, install helpers; Wizard CLI excluded"
+  "notes": "Hardened VLESS/Trojan TCP tunnel: bidirectional pump, connect ready, path normalize, UDP reject"
 }

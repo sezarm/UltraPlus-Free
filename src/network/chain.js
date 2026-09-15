@@ -1,17 +1,11 @@
-/**
- * Outbound chain: optional SOCKS5 or HTTP CONNECT hop before destination
- */
 import { getNetworkSettings } from "./settings.js";
 
 function encodeSocks5Auth(user, pass) {
   const u = new TextEncoder().encode(user || "");
   const p = new TextEncoder().encode(pass || "");
   const buf = new Uint8Array(3 + u.length + p.length);
-  buf[0] = 1;
-  buf[1] = u.length;
-  buf.set(u, 2);
-  buf[2 + u.length] = p.length;
-  buf.set(p, 3 + u.length);
+  buf[0] = 1; buf[1] = u.length; buf.set(u, 2);
+  buf[2 + u.length] = p.length; buf.set(p, 3 + u.length);
   return buf;
 }
 
@@ -38,16 +32,22 @@ async function readN(reader, n) {
   return out;
 }
 
+async function directConnect(address, port) {
+  const { connect } = await import("cloudflare:sockets");
+  const socket = connect({ hostname: String(address), port: Number(port) });
+  try { if (socket.opened) await socket.opened; } catch (_) {}
+  return socket;
+}
+
 export async function connectOutbound(env, address, port) {
-  const sock = await import("cloudflare:sockets");
   const st = await getNetworkSettings(env);
   const mode = (st.chainMode || "off").toLowerCase();
-  if (mode === "off" || !st.chainHost) {
-    return sock.connect({ hostname: address, port });
-  }
+  if (mode === "off" || !st.chainHost) return directConnect(address, port);
 
   const chainPort = parseInt(st.chainPort, 10) || 1080;
-  const remote = sock.connect({ hostname: st.chainHost, port: chainPort });
+  const { connect } = await import("cloudflare:sockets");
+  const remote = connect({ hostname: st.chainHost, port: chainPort });
+  try { if (remote.opened) await remote.opened; } catch (_) {}
   const writer = remote.writable.getWriter();
   const reader = remote.readable.getReader();
 
@@ -74,12 +74,9 @@ export async function connectOutbound(env, address, port) {
       }
       if (skip > 0) await readN(reader, skip);
     } else if (mode === "http") {
-      const auth =
-        st.chainUser || st.chainPass
-          ? "Proxy-Authorization: Basic " +
-            btoa(unescape(encodeURIComponent((st.chainUser || "") + ":" + (st.chainPass || "")))) +
-            "\r\n"
-          : "";
+      const auth = st.chainUser || st.chainPass
+        ? "Proxy-Authorization: Basic " + btoa(unescape(encodeURIComponent((st.chainUser || "") + ":" + (st.chainPass || "")))) + "\r\n"
+        : "";
       const req = `CONNECT ${address}:${port} HTTP/1.1\r\nHost: ${address}:${port}\r\n${auth}\r\n`;
       await writer.write(new TextEncoder().encode(req));
       let buf = new Uint8Array(0);
@@ -96,9 +93,8 @@ export async function connectOutbound(env, address, port) {
         if (buf.length > 8192) throw new Error("http header too large");
       }
     } else {
-      writer.releaseLock();
-      reader.releaseLock();
-      return sock.connect({ hostname: address, port });
+      writer.releaseLock(); reader.releaseLock();
+      return directConnect(address, port);
     }
   } catch (e) {
     try { writer.releaseLock(); } catch (_) {}
