@@ -85,16 +85,75 @@ export async function deleteHost(env, id) {
 }
 
 export async function resetHostPool(env) {
-  await kvPutJson(env, "host_pool", null);
+  if (env.ULTRA_KV) {
+    await env.ULTRA_KV.delete("host_pool");
+    try {
+      await env.ULTRA_KV.delete("host_rr_cursor");
+    } catch (_) {}
+  }
   return listHosts(env);
 }
+
+const RR_KEY = "host_rr_cursor";
 
 export function selectHosts(hosts, strategy, limit = 80) {
   const enabled = hosts.filter((h) => h.enabled);
   if (!enabled.length) return [];
   if (strategy === "random") {
-    const shuffled = [...enabled].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, limit);
+    const arr = [...enabled];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr.slice(0, limit);
   }
   return [...enabled].sort((a, b) => a.priority - b.priority).slice(0, limit);
+}
+
+/**
+ * Real round-robin: sort by priority, rotate by persistent KV cursor.
+ * Each subscription fetch advances cursor by 1.
+ */
+export async function selectHostsAsync(env, hosts, strategy, limit = 80) {
+  const enabled = hosts.filter((h) => h.enabled);
+  if (!enabled.length) return [];
+
+  if (strategy === "random") {
+    return selectHosts(enabled, "random", limit);
+  }
+
+  const sorted = [...enabled].sort((a, b) => a.priority - b.priority);
+
+  if (strategy !== "roundrobin" || !env || !env.ULTRA_KV) {
+    return sorted.slice(0, limit);
+  }
+
+  let cursor = 0;
+  try {
+    const raw = await env.ULTRA_KV.get(RR_KEY);
+    cursor = parseInt(raw, 10) || 0;
+  } catch (_) {
+    cursor = 0;
+  }
+
+  const n = sorted.length;
+  cursor = ((cursor % n) + n) % n;
+
+  const rotated = sorted.slice(cursor).concat(sorted.slice(0, cursor));
+  const selected = rotated.slice(0, Math.min(limit, n));
+
+  const next = (cursor + 1) % n;
+  try {
+    await env.ULTRA_KV.put(RR_KEY, String(next));
+  } catch (_) {}
+
+  return selected;
+}
+
+export async function resetRoundRobinCursor(env) {
+  if (env && env.ULTRA_KV) {
+    try {
+      await env.ULTRA_KV.delete(RR_KEY);
+    } catch (_) {}
+  }
 }

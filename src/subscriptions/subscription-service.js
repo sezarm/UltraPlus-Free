@@ -2,7 +2,7 @@ import { getUserByToken } from "../users/user-service.js";
 import { formatSubscription } from "./formatter.js";
 import { NotFoundError, AuthorizationError } from "../core/errors.js";
 import { getNetworkSettings } from "../network/settings.js";
-import { getEnabledHosts, selectHosts } from "../network/hosts.js";
+import { getEnabledHosts, selectHostsAsync } from "../network/hosts.js";
 import { getRoutingProfile } from "../network/routing.js";
 import { getResistancePolicy } from "../network/resistance.js";
 import { getMirrorSettings, subscriptionHeaders } from "./failover.js";
@@ -14,7 +14,7 @@ export async function resolveSubscription(env, token, host, format) {
   if (user.expired) throw new AuthorizationError("Subscription expired");
   const st = await getNetworkSettings(env);
   const hosts = await getEnabledHosts(env);
-  const selected = selectHosts(hosts, st.selection || "priority", 60);
+  const selected = await selectHostsAsync(env, hosts, st.selection || "priority", 60);
   const servers = selected.map((h) => h.address);
   const profile = await getRoutingProfile(env);
   const resistance = await getResistancePolicy(env);
