@@ -17,23 +17,42 @@ export async function getRadarReport(env) {
   return (await kvGetJson(env, "radar_last", null)) || null;
 }
 
-export async function runRadarScan(env, { addNew = true, maxCheck = 24 } = {}) {
-  const existing = await listHosts(env);
-  const known = new Set(existing.map((h) => h.address));
-  const results = [];
-  for (const address of RADAR_CANDIDATES.slice(0, maxCheck)) {
-    const r = await checkHost(address, 3500);
-    results.push(r);
-    if (r.ok && addNew && !known.has(address)) {
-      try {
-        await addHost(env, { address, label: "radar:" + address, priority: 80, notes: "radar" });
-        known.add(address);
-      } catch (_) {}
+async function poolMap(items, concurrency, fn) {
+  const out = new Array(items.length);
+  let i = 0;
+  async function worker() {
+    while (i < items.length) {
+      const idx = i++;
+      out[idx] = await fn(items[idx]);
     }
   }
-  for (const h of existing.slice(0, 15)) {
+  await Promise.all(Array.from({ length: Math.min(concurrency, items.length) || 1 }, () => worker()));
+  return out;
+}
+
+export async function runRadarScan(env, { addNew = true, maxCheck = 12, concurrency = 4 } = {}) {
+  const existing = await listHosts(env);
+  const known = new Set(existing.map((h) => h.address));
+  const list = RADAR_CANDIDATES.slice(0, maxCheck);
+  const results = await poolMap(list, concurrency, (address) => checkHost(address, 3000));
+  if (addNew) {
+    for (const r of results) {
+      if (r.ok && !known.has(r.address)) {
+        try {
+          await addHost(env, {
+            address: r.address,
+            label: "radar:" + r.address,
+            priority: 80,
+            notes: "radar",
+          });
+          known.add(r.address);
+        } catch (_) {}
+      }
+    }
+  }
+  for (const h of existing.slice(0, 8)) {
     if (results.some((x) => x.address === h.address)) continue;
-    results.push({ ...(await checkHost(h.address, 3000)), id: h.id });
+    results.push({ ...(await checkHost(h.address, 2500)), id: h.id });
   }
   const report = {
     at: new Date().toISOString(),

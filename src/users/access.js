@@ -4,10 +4,14 @@ import { isExpired } from "../utils/dates.js";
 
 export async function findUserByUuid(env, uuid) {
   if (!uuid) return null;
-  const u = uuid.toLowerCase();
+  const u = String(uuid).toLowerCase();
   if (hasD1(env)) {
     try {
-      const row = await queryOne(env, "SELECT * FROM users WHERE lower(uuid_or_identifier) = ?", [u]);
+      const row = await queryOne(
+        env,
+        "SELECT * FROM users WHERE uuid_or_identifier = ? OR lower(uuid_or_identifier) = ? LIMIT 1",
+        [uuid, u]
+      );
       if (!row) return null;
       return {
         id: row.id,
@@ -38,16 +42,49 @@ export async function addQuotaUsed(env, userId, bytes) {
   const n = Math.floor(bytes);
   if (hasD1(env)) {
     try {
-      await execute(env, "UPDATE users SET quota_used = COALESCE(quota_used,0) + ?, updated_at = ? WHERE id = ?", [n, Date.now(), userId]);
+      await execute(env, "UPDATE users SET quota_used = COALESCE(quota_used,0) + ?, updated_at = ? WHERE id = ?", [
+        n,
+        Date.now(),
+        userId,
+      ]);
     } catch (_) {}
     return;
   }
   if (!env.ULTRA_KV) return;
   try {
     let list = (await env.ULTRA_KV.get("users_list", "json")) || [];
-    list = list.map((u) => (u.id === userId ? { ...u, quota_used: (u.quota_used || 0) + n, updated_at: Date.now() } : u));
+    list = list.map((u) =>
+      u.id === userId ? { ...u, quota_used: (u.quota_used || 0) + n, updated_at: Date.now() } : u
+    );
     await env.ULTRA_KV.put("users_list", JSON.stringify(list));
   } catch (_) {}
+}
+
+/** Session-local batcher — flush every ~256 KiB to cut D1/KV writes per WS frame */
+export function createQuotaAccumulator(env, userId, threshold = 262144) {
+  let pending = 0;
+  let flushing = null;
+  const flush = async () => {
+    if (pending <= 0 || !userId) return;
+    const n = pending;
+    pending = 0;
+    await addQuotaUsed(env, userId, n);
+  };
+  return {
+    add(bytes) {
+      if (!bytes || bytes < 0) return;
+      pending += bytes | 0;
+      if (pending >= threshold && !flushing) {
+        flushing = flush().finally(() => {
+          flushing = null;
+        });
+      }
+    },
+    async end() {
+      if (flushing) await flushing;
+      await flush();
+    },
+  };
 }
 
 export async function resetQuota(env, userId) {
